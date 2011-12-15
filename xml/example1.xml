@@ -1,0 +1,39 @@
+<objects>
+   <object>
+      <type>Sphere</type>
+      <size>3</size>
+      <color>0,0,0</color>
+      <aplha>100</alpha>
+      <startx>0</startx>
+      <starty>0</starty>
+      <paths>
+         <path>
+            <time>4</time>
+            <endx>5</endx>
+            <endy>7</endy>
+         </path>
+
+         <path>
+            <time>2</time>
+            <endx>6</endx>
+            <endy>6</endy>
+         </path>
+      </paths>
+   </object>
+
+   <object>
+      <type>Square</type>
+      <size>5</size>
+      <color>244,103,0</color>
+      <aplha>255</alpha>
+      <startx>5</startx>
+      <starty>5</starty>
+      <paths>
+          <path>
+            <time>3</time>
+            <endx>2</endx>
+            <endy>2</endy>
+         </path>
+      </paths>
+   </object>
+</objects>
