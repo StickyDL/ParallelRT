@@ -8,7 +8,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.util.Random;
 
-public class Camera {
+public class Camera{
 
 	private final double XMIN = -0.5;
 	private final double XMAX = 0.5;
