@@ -1,11 +1,15 @@
+import javax.imageio.ImageIO;
+import javax.swing.JFrame;
+import javax.swing.JProgressBar;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
-import java.awt.Frame;
+import java.awt.BorderLayout;
 import java.awt.Canvas;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.io.File;
 import java.util.Random;
 
 public class Camera {
@@ -49,22 +53,17 @@ public class Camera {
 
 	}
 
-	public void render(World w) {
-
-		Frame frame = new Frame( "Ray Tracer - CG2" );
+	public void render(World w, File outputFile, JProgressBar progress ) {
+		progress.setMaximum( XRES * YRES );
+		int pixel_count = 0;
+		
+		
 		WritableRaster raster = image.getRaster();
 		this.w = w;
 		Point3d camPoint = this.position;
-		//Vector3d directVect = new Vector3d(0.0, 0.0, -1.0);
-		//Vector3d testerVect = new Vector3d(-0.1, 0.3, -2.0);
-		//Ray directRay = new Ray(this.position, testerVect);
-		//Point3d directPoint = w.objectList.get(0).intersect(directRay);
-		//System.out.println(directPoint.x + ", " + directPoint.y + ", " + directPoint.z);
-		//Vector3d initial = new Vector3d(-0.75, -3.95, -0.9);
-		//initial.normalize();
-		//Ray tester = new Ray(w.light.position, initial);
-		//Point3d testPoint = w.objectList.get(0).intersect(tester);
-		//System.out.println(testPoint.x + ", " + testPoint.y + ", " + testPoint.z);
+		
+		pixelNum = 0;
+
 		for(double y = YMAX; y > YMIN; y = y - deltaY) {
 
 			for( double x = XMIN; x < XMAX; x = x + deltaX) {
@@ -103,15 +102,21 @@ public class Camera {
 
 
 				}
-
+				pixel_count++;
 			}
-
+			if( progress != null ){
+				progress.setValue( pixel_count );
+			}
 		}
-
+		
 		raster.setPixels(0, 0, XRES, YRES, pixelArray);
-		frame.add(new Painter());
-		frame.setSize(new Dimension(XRES+20, YRES+44));
-		frame.setVisible(true);
+		
+		try{
+			ImageIO.write(image, "png", outputFile );
+		}catch( Exception e ){
+			System.err.println( e.getMessage() );
+			e.printStackTrace();
+		}
 
 	}
 	
