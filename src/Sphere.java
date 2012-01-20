@@ -5,18 +5,36 @@ public class Sphere extends GraphicObject {
 	Point3d center;
 	double radius;
 	
+	/*
+	    Creates a Sphere object with the given center, radius, ambient color,
+	    reflectivity, and transparency.
+	    
+	    ka - Ambient Lighting (0-1). Amount of background light
+	    kd - Diffuse Lighting (0-1). Lambertian Reflection
+	    ks - Specular Lighting (0-1). Mirror-like Reflection
+	    ke - Exponent (20-100. Needs to be EVEN) - Controls size of Specular Highlight
+	    kr - Reflectivity (0-1). 0=Non-Reflective 1=Reflective
+	    kt - Transparency (0-1). 0=Non-Transparent 1=Transparent
+	*/
 	public Sphere(Point3d center, double radius, Color ambc, double kr, double kt){
-		this.center = center;
-		this.radius = radius;
-		this.ambcolor = ambc;
-		ka = 0.2; //.5 .6
-		kd = 0.2; //.1 .2
-		ks = 0.4; //.6 .2
-		ke = 20;
-		this.kr = kr;
-		this.kt = kt;
-		//this.kr = 0.2;
-		kt = 0.0;
+	    this(center, radius, ambc, 0.2, 0.2, 0.4, 20, kr, kt);
+	}
+	
+	public Sphere(Point3d center, double radius, Color ambc, double ka, double kd,
+	                double ks, int ke, double kr, double kt) {
+    	this.center = center;
+    	this.radius = radius;
+    	this.ambcolor = ambc;
+    	this.ka = ka;
+        this.kd = kd;
+        this.ks = ks;
+        if ( (ke & 1) == 0 ) {
+            this.ke = (double)ke;
+        } else {
+            this.ke = (double)ke+1.0;
+        } 
+    	this.kr = kr;
+    	this.kt = kt;   
 	}
 	
 	 public Point3d intersect(Ray r){
@@ -25,7 +43,6 @@ public class Sphere extends GraphicObject {
 		 double dy = r.direction.y;
 		 double dz = r.direction.z;
 
-//		 double a = dx*dx + dy*dy + dz*dz;
 		 double b = 2 * ((dx*(r.origin.x - center.x)) + (dy*(r.origin.y - center.y)) + (dz*(r.origin.z - center.z)));
 		 double c = ((r.origin.x - center.x)*(r.origin.x - center.x)) + ((r.origin.y - center.y)*(r.origin.y - center.y)) + ((r.origin.z - center.z)*(r.origin.z - center.z)) - (radius * radius);
 
@@ -57,7 +74,6 @@ public class Sphere extends GraphicObject {
 			else if( t < 0 ) {
 				return null;
 			}
-			//System.out.println("t: " + t);
 		 }
 
 		double xintersect = r.origin.x + (dx * t);
