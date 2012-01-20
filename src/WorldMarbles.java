@@ -58,6 +58,7 @@ public class WorldMarbles {
 	 */
 	public WorldMarbles( int seconds, int marbles, boolean colorful ){
 		worlds = new World[24*seconds];
+		Random r = new Random();
 
 		// Marble x,y,z positions
 		double posx[] = new double[]{-0.4,  0.25,  0.0};
@@ -79,12 +80,15 @@ public class WorldMarbles {
 				new Color(255.0, 0.0, 0.0) };
 		
 		// Marble kr and kt values
+		double ka[] = new double[]{ 0.2, 0.2, 0.2 };
+		double kd[] = new double[]{ 0.2, 0.2, 0.2 };
+		double ks[] = new double[]{ 0.4, 0.4, 0.4 };
+		int ke[] = new int[]{ 20, 50, 100 };
 		double kr[] = new double[]{ 1.0, 0.0,  0.0 };
 		double kt[] = new double[]{ 0.0, 1.0, 1.0 };
 		
 		if( marbles > 0 ){
 			// Generates random marbles
-			Random r = new Random();
 			posx = new double[marbles];
 			posy = new double[marbles];
 			posz = new double[marbles];
@@ -93,6 +97,10 @@ public class WorldMarbles {
 			spdy = new double[marbles];
 			spdz = new double[marbles];
 			colors = new Color[marbles];
+			ka = new double[marbles];
+			kd = new double[marbles];
+			ks = new double[marbles];
+			ke = new int[marbles];
 			kr = new double[marbles];
 			kt = new double[marbles];
 			for( int i = 0; i < marbles; i++ ){
@@ -103,10 +111,16 @@ public class WorldMarbles {
 				spdx[i] = ( r.nextDouble() * 5 ) - 5;
 				spdy[i] = ( r.nextDouble() * 5 ) - 5;
 				spdz[i] = ( r.nextDouble() * 5 ) - 5;
+                ka[i] = r.nextDouble()/2+0.1;
+                kd[i] = r.nextDouble()/2+0.1;
+                ks[i] = r.nextDouble()/2+0.1;
+                ke[i] = r.nextInt(80)+20;
 				if( colorful ){
 					colors[i] = new Color( r.nextDouble() * 500, r.nextDouble() * 500, r.nextDouble() * 500 );
-					kr[i] = r.nextDouble();
-					kt[i] = r.nextDouble();
+                    kr[i] = r.nextDouble()/4;
+                    // kr[i] = 0;
+                    kt[i] = r.nextDouble()/4;
+                    // kt[i] = 0;
 				}else{
 					colors[i] = new Color( r.nextDouble() * 50, r.nextDouble() * 50, r.nextDouble() * 50 );
 					kr[i] = 0;
@@ -117,7 +131,8 @@ public class WorldMarbles {
 		
 		
 		// Loop to generate each world scene
-		for( int i = 0; i < worlds.length; i++ ){
+		int shaderIndex = r.nextInt(4);
+    	for( int i = 0; i < worlds.length; i++ ){
 			World world = new World();
 			worlds[i] = world;
 			
@@ -130,12 +145,19 @@ public class WorldMarbles {
 			// Set up floor
 			ArrayList<Point3d> triAVertices = new ArrayList<Point3d>();
 			ArrayList<Point3d> triBVertices = new ArrayList<Point3d>();
+			ArrayList<Point3d> triCVertices = new ArrayList<Point3d>();
+			ArrayList<Point3d> triDVertices = new ArrayList<Point3d>();
 			
 			Point3d PLANEVERTLF = new Point3d(left, bottom, front);
 			Point3d PLANEVERTRF = new Point3d(right, bottom, front);
 			Point3d PLANEVERTRR = new Point3d(right, bottom, back);
 			Point3d PLANEVERTLR = new Point3d(left, bottom, back);
 			
+			Point3d LEFTPLANEVERTLFB = new Point3d(left, bottom, front);
+			Point3d LEFTPLANEVERTRRB = new Point3d(left, bottom, back);
+			Point3d LEFTPLANEVERTLFT = new Point3d(left, top, front);
+			Point3d LEFTPLANEVERTRRT = new Point3d(left, top, back);
+						
 			triAVertices.add(PLANEVERTLF);
 			triAVertices.add(PLANEVERTRF);
 			triAVertices.add(PLANEVERTRR);
@@ -144,15 +166,26 @@ public class WorldMarbles {
 			triBVertices.add(PLANEVERTRR);
 			triBVertices.add(PLANEVERTLF);
 			
+			triCVertices.add(LEFTPLANEVERTLFB);
+			triCVertices.add(LEFTPLANEVERTRRB);
+			triCVertices.add(LEFTPLANEVERTLFT);
+			
+			triDVertices.add(LEFTPLANEVERTLFT);
+			triDVertices.add(LEFTPLANEVERTRRB);
+			triDVertices.add(LEFTPLANEVERTRRT);
+			
 			// Set up light
 			Point3d LIGHTCENTER = new Point3d(0.3, 2.75, 1.0);
 			
 			// Add objects to world
 			for( int k = 0; k < centers.length; k++ ){
-				world.add( new Sphere( centers[k], radii[k], colors[k], kr[k], kt[k] ) );
+                world.add( new Sphere( centers[k], radii[k], colors[k], ka[k], kd[k], ks[k], ke[k], kr[k], kt[k] ) );
+                // world.add( new Sphere( centers[k], radii[k], colors[k], kr[k], kt[k] ) );
 			}
-			world.add( new Triangle (triAVertices, new Vector3d(0,1,0), new Color(200, 200, 10)));
-			world.add( new Triangle (triBVertices, new Vector3d(0,1,0), new Color(200, 200, 10)));
+			world.add( new Triangle (triAVertices, new Vector3d(0,1,0), new Color(0, 0, 0), shaderIndex));
+			world.add( new Triangle (triBVertices, new Vector3d(0,1,0), new Color(0, 0, 0), shaderIndex));
+			world.add( new Triangle (triCVertices, new Vector3d(0,1,0), new Color(0, 0, 0), shaderIndex));
+			world.add( new Triangle (triDVertices, new Vector3d(0,1,0), new Color(0, 0, 0), shaderIndex));
 			
 			world.add( new PointLight(LIGHTCENTER, new Color(255.0, 255.0, 255.0)));
 			
