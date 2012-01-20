@@ -1,14 +1,9 @@
 import javax.imageio.ImageIO;
-import javax.swing.JFrame;
 import javax.swing.JProgressBar;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
-import java.awt.BorderLayout;
-import java.awt.Canvas;
-import java.awt.Dimension;
-import java.awt.Graphics;
 import java.io.File;
 import java.util.Random;
 
@@ -26,7 +21,7 @@ public class Camera {
 	//private final double YMIN = -0.5; //Testing YMIN Value
 	//private final double YMAX = 0.5; //Testing YMAX Value
 
-	static BufferedImage image;
+	BufferedImage image;
 
 	private int pixelNum = 0;
 	private int DEPTH = 5;
@@ -54,7 +49,9 @@ public class Camera {
 	}
 
 	public void render(World w, File outputFile, JProgressBar progress ) {
-		progress.setMaximum( XRES * YRES );
+		if( progress != null ){
+			progress.setMaximum( XRES * YRES );
+		}
 		int pixel_count = 0;
 		
 		
@@ -70,7 +67,7 @@ public class Camera {
 
 				if(pixelNum < pixelArray.length) {
 					//Super Sample
-					for(int supeSamp = 0; supeSamp < 16; supeSamp++) {
+					for(int supeSamp = 0; supeSamp < 1; supeSamp++) {
 						if(supeSamp != 0) {
 							double alterX = (rand.nextDouble() * 0.0026) - 0.0013;
 							double alterY = (rand.nextDouble() * 0.0026) - 0.0013;
@@ -278,7 +275,7 @@ public class Camera {
 						double ddotn = D.dot(N);
 						if(ddotn >= 0){
 							Vector3d newN = new Vector3d(N.x * (2*ddotn), N.y * (2*ddotn), N.z * (2*ddotn));
-							Vector3d R = new Vector3d( (newN.x - D.x), (newN.y - D.y), (newN.z - D.z));
+//							Vector3d R = new Vector3d( (newN.x - D.x), (newN.y - D.y), (newN.z - D.z));
 							Ray reflectiveRay = new Ray(iPoint, new Vector3d( (newN.x - D.x), (newN.y - D.y), 
 												(newN.z - D.z)));
 							Color reflect = illuminate(reflectiveRay, depth+1);
@@ -309,11 +306,3 @@ public class Camera {
 	}
 
 }
-
-class Painter extends Canvas {
-
-	public void paint(Graphics g) {
-		g.drawImage(Camera.image, 0, 0, null);
-	}
-
-}   

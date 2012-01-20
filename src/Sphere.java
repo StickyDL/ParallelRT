@@ -25,7 +25,7 @@ public class Sphere extends GraphicObject {
 		 double dy = r.direction.y;
 		 double dz = r.direction.z;
 
-		 double a = dx*dx + dy*dy + dz*dz;
+//		 double a = dx*dx + dy*dy + dz*dz;
 		 double b = 2 * ((dx*(r.origin.x - center.x)) + (dy*(r.origin.y - center.y)) + (dz*(r.origin.z - center.z)));
 		 double c = ((r.origin.x - center.x)*(r.origin.x - center.x)) + ((r.origin.y - center.y)*(r.origin.y - center.y)) + ((r.origin.z - center.z)*(r.origin.z - center.z)) - (radius * radius);
 
