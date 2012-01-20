@@ -7,6 +7,7 @@ import javax.vecmath.Vector3d;
 
 import edu.rit.pj.BarrierAction;
 import edu.rit.pj.IntegerForLoop;
+import edu.rit.pj.IntegerSchedule;
 import edu.rit.pj.ParallelRegion;
 import edu.rit.pj.ParallelTeam;
 import edu.rit.pj.reduction.ObjectOp;
@@ -26,8 +27,8 @@ public class RayTracerSmp {
 	public static void main(String[] args) throws Exception {
 		
 		// Setup worlds to render
-//		WorldMarbles genWorld = new WorldMarbles(3,10,false); // Generate 30 seconds of 10 clear marbles
-		WorldMarbles genWorld = new WorldMarbles(5,50,true);  // Generate 5 seconds of 50 colorful marbles
+        // WorldMarbles genWorld = new WorldMarbles(3,10,false); // Generate 30 seconds of 10 clear marbles
+        WorldMarbles genWorld = new WorldMarbles(5,50,true);  // Generate 5 seconds of 50 colorful marbles
 		final World[] worlds = genWorld.getWorlds();
 		
 		// Erase previous render
@@ -93,6 +94,12 @@ public class RayTracerSmp {
 				};
 				
 				execute( 0, worlds.length - 1, new IntegerForLoop() {
+				    
+				    public IntegerSchedule schedule()
+                    {
+                        return IntegerSchedule.guided();
+                    }
+				    
 					public void run(int low, int high) throws Exception {
 						Camera camera = new Camera(CAMERACENTER, CAMERALOOKAT, CAMERAUP);
 						int index = getThreadIndex();
