@@ -134,7 +134,8 @@ public class RayTracer {
 		
 		
 		//World[] worlds = new World[]{ world, world, world, world }; // Array or worlds to render
-		World[] worlds = WorldTest.getWorlds();
+		WorldGenerator gen = new WorldTest();
+		World[] worlds = gen.getWorlds();
 		
 		// Setup progress window
 		JFrame frame = new JFrame("Rendering...");
