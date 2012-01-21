@@ -10,6 +10,7 @@ import org.eclipse.swt.widgets.*;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -68,6 +69,7 @@ public class PlayMovie {
 		
 		JLabel label = new JLabel(images[0]);
 		final JToggleButton play = new JToggleButton("Play");
+		final JButton reset = new JButton( "Reset" );
 		
 		final Player p = new Player( label, images, index, play );
 		
@@ -77,9 +79,16 @@ public class PlayMovie {
 			}
 		});
 		
+		reset.addActionListener( new ActionListener(){
+			public void actionPerformed( ActionEvent arg0 ){
+				p.reset();
+			}
+		});
+		
 		JPanel bottom = new JPanel();
 		bottom.setLayout( new FlowLayout() );
 		bottom.add( play );
+		bottom.add( reset );
 		
 		frame.add( label, BorderLayout.CENTER );
 		frame.add( bottom, BorderLayout.SOUTH );
@@ -98,6 +107,7 @@ public class PlayMovie {
 		JToggleButton button;
 		int curframe = 0;
 		boolean play = false;
+		boolean reset = false;
 		
 		public Player( JLabel display, ImageIcon[] images, int frames, JToggleButton button ){
 			screen = display;
@@ -122,15 +132,22 @@ public class PlayMovie {
 			return play;
 		}
 		
+		public void reset(){
+			reset = true;
+			if( !play ){
+				this.interrupt();
+			}
+		}
+		
 		/**
 		 * Thread for playing the frames of the movie
 		 */
 		public void run(){
 			while( true ){
 				
-				for( ; curframe < frames && play; curframe++ ){
+				for( ; curframe < frames && play && !reset; curframe++ ){
 					screen.setIcon( images[curframe] );
-					screen.validate();
+//					screen.validate();
 					try{
 						Thread.sleep(1000/24);
 					}catch( Exception e ){}
@@ -138,14 +155,21 @@ public class PlayMovie {
 				
 				if( curframe >= frames ){
 					curframe = 0;
-					button.setText("Play");
+					button.setText("Replay");
 					button.setSelected(false);
 					play = false;
 				}
 				
-				try {
-					Thread.sleep(10000);
-				} catch (InterruptedException e) {}
+				if( reset ){
+					reset = false;
+					curframe = 0;
+					screen.setIcon( images[curframe] );
+//					screen.validate();
+				}else{
+					try {
+						Thread.sleep(10000);
+					} catch (InterruptedException e) {}
+				}
 			}
 		}
 	}
