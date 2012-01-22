@@ -118,9 +118,9 @@ public class WorldMarbles extends WorldGenerator{
 				posx[i] = r.nextDouble() * (right - left - 2 * radii[i]) + left + radii[i];
 				posy[i] = r.nextDouble() * (top - bottom - 2 * radii[i]) + bottom + radii[i];
 				posz[i] = r.nextDouble() * (front - back - 2 * radii[i]) + back + radii[i];
-				spdx[i] = (r.nextDouble() * 5) - 5;
-				spdy[i] = (r.nextDouble() * 5) - 5;
-				spdz[i] = (r.nextDouble() * 5) - 5;
+				spdx[i] = (r.nextDouble() * 10) - 5;
+				spdy[i] = (r.nextDouble() * 10) - 5;
+				spdz[i] = (r.nextDouble() * 10) - 5;
 				ka[i] = r.nextDouble() / 2 + 0.1;
 				kd[i] = r.nextDouble() / 2 + 0.1;
 				ks[i] = r.nextDouble() / 2 + 0.1;
@@ -191,10 +191,10 @@ public class WorldMarbles extends WorldGenerator{
 				world.add( new Sphere( centers[k], radii[k], colors[k], ka[k], kd[k], ks[k], ke[k], kr[k], kt[k] ) );
 				// world.add( new Sphere( centers[k], radii[k], colors[k], kr[k], kt[k] ) );
 			}
-			world.add( new Triangle( triAVertices, new Vector3d( 0, 1, 0 ), new Color( 0, 0, 0 ), shaderIndex ) );
-			world.add( new Triangle( triBVertices, new Vector3d( 0, 1, 0 ), new Color( 0, 0, 0 ), shaderIndex ) );
-			world.add( new Triangle( triCVertices, new Vector3d( 0, 1, 0 ), new Color( 0, 0, 0 ), shaderIndex ) );
-			world.add( new Triangle( triDVertices, new Vector3d( 0, 1, 0 ), new Color( 0, 0, 0 ), shaderIndex ) );
+			world.add( new Triangle( triAVertices, new Vector3d( 0, 1, 0 ), new Color( 255, 255, 255 ), shaderIndex ) );
+			world.add( new Triangle( triBVertices, new Vector3d( 0, 1, 0 ), new Color( 255, 255, 255 ), shaderIndex ) );
+			world.add( new Triangle( triCVertices, new Vector3d( 0, 1, 0 ), new Color( 255, 255, 255 ), shaderIndex ) );
+			world.add( new Triangle( triDVertices, new Vector3d( 0, 1, 0 ), new Color( 255, 255, 255 ), shaderIndex ) );
 
 			world.add( new PointLight( LIGHTCENTER, new Color( 255.0, 255.0, 255.0 ) ) );
 
