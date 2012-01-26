@@ -27,9 +27,11 @@ public class RayTracerSmp{
 	private WorldGenerator genWorlds;
 
 	public static void main( String[] args ) throws Exception{
-//		RayTracerSmp rt = new RayTracerSmp( new WorldMarbles( 1, 3, false ) );
-		RayTracerSmp rt = new RayTracerSmp( new WorldMarbleGrid( 10, WorldMarbleGrid.DIAGONAL ) );
+        RayTracerSmp rt = new RayTracerSmp( new WorldMarbles( 5, 50, true ) );
+        // RayTracerSmp rt = new RayTracerSmp( new WorldMarbleGrid( 10, WorldMarbleGrid.DIAGONAL ) );
+        long startTime = System.currentTimeMillis();
 		rt.render();
+		System.out.println("Time: " + (System.currentTimeMillis() - startTime) + "msec");
 	}
 
 	/**
