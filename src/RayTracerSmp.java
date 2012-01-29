@@ -29,9 +29,12 @@ public class RayTracerSmp{
 	public static void main( String[] args ) throws Exception{
         RayTracerSmp rt = new RayTracerSmp( new WorldMarbles( 5, 50, true ) );
         // RayTracerSmp rt = new RayTracerSmp( new WorldMarbleGrid( 10, WorldMarbleGrid.DIAGONAL ) );
+        rt.cleanup();
         long startTime = System.currentTimeMillis();
 		rt.render();
 		System.out.println("Time: " + (System.currentTimeMillis() - startTime) + "msec");
+
+		PlayMovie.main( new String[]{} );
 	}
 
 	/**
@@ -43,15 +46,7 @@ public class RayTracerSmp{
 		this.genWorlds = genWorlds;
 	}
 	
-	/**
-	 * Renders the Worlds produced by the world Generator
-	 * 
-	 * @throws Exception
-	 */
-	public void render() throws Exception{
-		// Setup worlds to render
-		final World[] worlds = genWorlds.getWorlds();
-
+	public void cleanup(){
 		// Erase previous render
 		File[] files = new File( "." ).listFiles();
 		try{
@@ -63,6 +58,16 @@ public class RayTracerSmp{
 		}catch( Exception e ){
 			System.exit( 1 );
 		}
+	}
+	
+	/**
+	 * Renders the Worlds produced by the world Generator
+	 * 
+	 * @throws Exception
+	 */
+	public void render() throws Exception{
+		// Setup worlds to render
+		final World[] worlds = genWorlds.getWorlds();
 
 		// Setup progress window
 		JFrame frame = new JFrame( "Rendering..." );
@@ -141,8 +146,6 @@ public class RayTracerSmp{
 		} );
 
 		main.setString( "Done!" );
-
-		PlayMovie.main( new String[]{} );
 	}
 
 }

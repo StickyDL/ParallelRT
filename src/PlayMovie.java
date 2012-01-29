@@ -43,9 +43,13 @@ public class PlayMovie {
 			}
 			
 			dir = new File( dirName );
+			
+			System.out.println( "PlayMovie: Loading movie from " + dirName );
 		}else{
 			// Use current directory
 			dir = new File(".");
+			
+			System.out.println( "PlayMovie: Loading movie from current directory" );
 		}
 		
 		// Read in all files and construct images
@@ -59,12 +63,14 @@ public class PlayMovie {
 			for( int i = 0; i < files.length; i++ ){
 				if( files[i].getName().endsWith(".png") ){
 					images[index++] = new ImageIcon( ImageIO.read( files[i] ) );
-					System.out.println( files[i].getName() );
+//					System.out.println( files[i].getName() );
 				}
 			}
 		}catch( Exception e ){
 			System.exit(1);
 		}
+		
+		System.out.println( "PlayMovie: Loaded " + index + " frames (" + (index / 24.0) + "s)" );
 		
 		
 		JLabel label = new JLabel(images[0]);
