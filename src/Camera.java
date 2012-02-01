@@ -17,14 +17,11 @@ public class Camera {
 	private final int XRES = 500;
 	private final int YRES = 500;
 	private final double Z = 0.5;
-	//private final double Z = -1.0; //Testing Z Value
-	//private final double YMIN = -0.5; //Testing YMIN Value
-	//private final double YMAX = 0.5; //Testing YMAX Value
 
 	BufferedImage image;
 
 	private int pixelNum = 0;
-	private int DEPTH = 5;
+	private int MAX_DEPTH = 5;
 	Random rand = new Random();
 	private double deltaY = (YMAX - YMIN) / YRES;
 	private double deltaX = (XMAX - XMIN) / XRES;
@@ -77,7 +74,7 @@ public class Camera {
 						Ray rtRay = new Ray( camPoint, new Vector3d(x-(camPoint.x), y-(camPoint.y), Z-(camPoint.z)));	
 					
 						//Illuminate the pixel given the ray
-						Color pixelColor = illuminate(rtRay, DEPTH);
+						Color pixelColor = illuminate(rtRay, 1);
 						if(supeSamp == 0) {
 							pixelArray[pixelNum] = pixelColor.r;
 							pixelArray[pixelNum+1] = pixelColor.g;
@@ -220,7 +217,7 @@ public class Camera {
 			}
 				
 			//Determine Reflection and Transmission (Recursively) - Checkpoint 5 & 6
-			if( depth < 30){
+			if( depth < MAX_DEPTH){
 				//Reflection
 				if(kr > 0){
 					Vector3d D = new Vector3d(r.origin.x-iPoint.x, 
