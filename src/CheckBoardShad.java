@@ -15,6 +15,9 @@ public class CheckBoardShad extends Shader {
 		Color result = new Color(0,0,0);
 		double row = Math.floor(origin.z - point.z / checkBoardSize) + 2;
 		double col = Math.floor(point.x - origin.x / checkBoardSize) + 2;
+		if ( (point.x - origin.x) == 0 ) {
+		    col = Math.floor(point.y - origin.y / checkBoardSize) + 2;
+		}
 		if( row < 0 )
 			row *= -1;
 		if( col < 0 )
