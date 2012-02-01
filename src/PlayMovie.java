@@ -11,6 +11,7 @@ import org.eclipse.swt.widgets.*;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -76,8 +77,9 @@ public class PlayMovie {
 		JLabel label = new JLabel(images[0]);
 		final JToggleButton play = new JToggleButton("Play");
 		final JButton reset = new JButton( "Reset" );
+		final JCheckBox repeat = new JCheckBox( "Repeat" );
 		
-		final Player p = new Player( label, images, index, play );
+		final Player p = new Player( label, images, index, play, repeat );
 		
 		play.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent ae) {
@@ -95,6 +97,7 @@ public class PlayMovie {
 		bottom.setLayout( new FlowLayout() );
 		bottom.add( play );
 		bottom.add( reset );
+		bottom.add( repeat );
 		
 		frame.add( label, BorderLayout.CENTER );
 		frame.add( bottom, BorderLayout.SOUTH );
@@ -111,15 +114,17 @@ public class PlayMovie {
 		ImageIcon[] images;
 		int frames;
 		JToggleButton button;
+		JCheckBox repeat;
 		int curframe = 0;
 		boolean play = false;
 		boolean reset = false;
 		
-		public Player( JLabel display, ImageIcon[] images, int frames, JToggleButton button ){
+		public Player( JLabel display, ImageIcon[] images, int frames, JToggleButton button, JCheckBox repeat ){
 			screen = display;
 			this.images = images;
 			this.frames = frames;
 			this.button = button;
+			this.repeat = repeat;
 			start();
 		}
 		
@@ -160,10 +165,14 @@ public class PlayMovie {
 				}
 				
 				if( curframe >= frames ){
-					curframe = 0;
-					button.setText("Replay");
-					button.setSelected(false);
-					play = false;
+					if( repeat.isSelected() ){
+						reset = true;
+					}else{
+						curframe = 0;
+						button.setText("Replay");
+						button.setSelected(false);
+						play = false;
+					}
 				}
 				
 				if( reset ){
