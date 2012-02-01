@@ -17,10 +17,14 @@ public class RayTracerSeq {
 	private WorldGenerator genWorlds;
 	
 	public static void main(String[] args) throws Exception {
-		int frames = new WorldMarbleGrid(0,0).frames;
 		
-		RayTracerSeq rt = new RayTracerSeq( new WorldMarbleGrid( 10, WorldMarbleGrid.DIAGONAL ) );
-	    // RayTracerSeq rt = new RayTracerSeq( new WorldMarbleGrid( 10, WorldMarbleGrid.DIAGONAL ) );
+		WorldGenerator gen = new WorldMarbleGrid( 10, WorldMarbleGrid.DIAGONAL, 5 );
+//	    WorldGenerator gen = new WorldMarbleGrid( 10, WorldMarbleGrid.DIAGONAL );
+
+		int frames = gen.getWorlds().length;
+		
+		RayTracerSeq rt = new RayTracerSeq( gen);
+
 		
 		rt.cleanup();
 	    long startTime = System.currentTimeMillis();

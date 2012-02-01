@@ -23,16 +23,22 @@ public class WorldMarbleGrid extends WorldGenerator{
 	final static int ROWS = 0;
 	final static int COLUMNS = 1;
 	final static int DIAGONAL = 2;
+	
+	static int frames;
 
 	World[] worlds;
+	
+	public WorldMarbleGrid( int marbles, int style ){
+		this( marbles, style, Integer.MAX_VALUE );
+	}
 	
 	/**
 	 * Makes a grid of superballs
 	 * @param marbles Sqrt of number of marbles to draw
 	 * @param style   Marble layout style [ROWS, COLUMNS, DIAGONAL]
 	 */
-	public WorldMarbleGrid( int marbles, int style ){
-//		worlds = new World[24*seconds];
+	public WorldMarbleGrid( int marbles, int style, int frameCount ){
+		frames = frameCount;
 		LinkedList<World> worldList = new LinkedList<World>(); 
 		
 		double centerx = 0;
@@ -100,7 +106,7 @@ public class WorldMarbleGrid extends WorldGenerator{
 		
 		// Render worlds until all marbles have stopped moving
 		boolean done = false;
-		while( !done ){
+		while( !done && worldList.size() < frameCount ){
 			World world = new World();
 			worldList.add( world );
 			

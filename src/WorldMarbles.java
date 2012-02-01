@@ -27,7 +27,7 @@ public class WorldMarbles extends WorldGenerator{
 	 *            Number of seconds in animation
 	 */
 	public WorldMarbles( int seconds ){
-		this( seconds, -1, false );
+		this( seconds, -1, false, -1 );
 	}
 
 
@@ -40,7 +40,7 @@ public class WorldMarbles extends WorldGenerator{
 	 *            True to use colorful marbles, false to use transparent ones
 	 */
 	public WorldMarbles( int seconds, boolean colorful ){
-		this( seconds, -1, colorful );
+		this( seconds, -1, colorful, -1 );
 	}
 
 	/**
@@ -52,10 +52,10 @@ public class WorldMarbles extends WorldGenerator{
 	 *            Number of marbles to generate
 	 */
 	public WorldMarbles( int seconds, int marbles ){
-		this( seconds, marbles, false );
+		this( seconds, marbles, false, -1 );
 	}
-
-
+	
+	
 	/**
 	 * Generates worlds of marbles to render
 	 * 
@@ -67,8 +67,26 @@ public class WorldMarbles extends WorldGenerator{
 	 *            True to use colorful marbles, false to use transparent ones
 	 */
 	public WorldMarbles( int seconds, int marbles, boolean colorful ){
+		this( seconds, marbles, colorful, -1 );
+	}
+
+
+
+	/**
+	 * Generates worlds of marbles to render
+	 * 
+	 * @param seconds  Number of seconds in animation
+	 * @param marbles  Number of marbles to generate
+	 * @param colorful True to use colorful marbles, false to use transparent ones
+	 * @param seed     Random number generator seed
+	 */
+	public WorldMarbles( int seconds, int marbles, boolean colorful, int seed ){
 		worlds = new World[24 * seconds];
-		Random r = new Random();
+		if( seed < 0 ){
+			seed = new Random().nextInt();
+		}
+		Random r = new Random( seed );
+		System.out.println( "World Generator seed: " + seed );
 
 		// Marble x,y,z positions
 		double posx[] = new double[]{ -0.4, 0.25, 0.0 };
