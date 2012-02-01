@@ -9,12 +9,12 @@ public class Triangle extends GraphicObject {
 
 	public Triangle(ArrayList<Point3d> vertices, Color ambc)
 	{
-        this(vertices, normal, ambc, 0.2, 0.4, 0.6, 20, 0.0, 0.0, 0);
+        this(vertices, ambc, 0.2, 0.4, 0.6, 20, 0.0, 0.0, 0);
     }
     
     public Triangle(ArrayList<Point3d> vertices, Color ambc, int shaderIndex)
     {
-        this(vertices, normal, ambc, 0.2, 0.4, 0.6, 20, 0.6, 0.0, shaderIndex);
+        this(vertices, ambc, 0.2, 0.4, 0.6, 20, 0.0, 0.0, shaderIndex);
     }
 
     /*
