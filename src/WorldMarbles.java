@@ -159,6 +159,7 @@ public class WorldMarbles extends WorldGenerator{
 
 		// Loop to generate each world scene
 		int shaderIndex = r.nextInt( 4 );
+		shaderIndex = 1;
 		for( int i = 0; i < worlds.length; i++ ){
 			World world = new World();
 			worlds[i] = world;
@@ -189,9 +190,9 @@ public class WorldMarbles extends WorldGenerator{
 			triAVertices.add( PLANEVERTRF );
 			triAVertices.add( PLANEVERTRR );
 
-			triBVertices.add( PLANEVERTLR );
-			triBVertices.add( PLANEVERTRR );
 			triBVertices.add( PLANEVERTLF );
+			triBVertices.add( PLANEVERTRR );
+			triBVertices.add( PLANEVERTLR );
 
 			triCVertices.add( LEFTPLANEVERTLFB );
 			triCVertices.add( LEFTPLANEVERTRRB );
@@ -207,12 +208,11 @@ public class WorldMarbles extends WorldGenerator{
 			// Add objects to world
 			for( int k = 0; k < centers.length; k++ ){
 				world.add( new Sphere( centers[k], radii[k], colors[k], ka[k], kd[k], ks[k], ke[k], kr[k], kt[k] ) );
-				// world.add( new Sphere( centers[k], radii[k], colors[k], kr[k], kt[k] ) );
 			}
-			world.add( new Triangle( triAVertices, new Vector3d( 0, 1, 0 ), new Color( 255, 255, 255 ), shaderIndex ) );
-			world.add( new Triangle( triBVertices, new Vector3d( 0, 1, 0 ), new Color( 255, 255, 255 ), shaderIndex ) );
-			world.add( new Triangle( triCVertices, new Vector3d( 0, 1, 0 ), new Color( 255, 255, 255 ), shaderIndex ) );
-			world.add( new Triangle( triDVertices, new Vector3d( 0, 1, 0 ), new Color( 255, 255, 255 ), shaderIndex ) );
+			world.add( new Triangle( triAVertices, new Color( 255, 255, 255 ), shaderIndex ) );
+			world.add( new Triangle( triBVertices, new Color( 255, 255, 255 ), shaderIndex ) );
+			world.add( new Triangle( triCVertices, new Color( 255, 255, 255 ), shaderIndex ) );
+			world.add( new Triangle( triDVertices, new Color( 255, 255, 255 ), shaderIndex ) );
 
 			world.add( new PointLight( LIGHTCENTER, new Color( 255.0, 255.0, 255.0 ) ) );
 
