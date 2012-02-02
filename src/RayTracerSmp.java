@@ -16,6 +16,7 @@ import edu.rit.pj.reduction.SharedObject;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.io.File;
+import java.util.Random;
 
 public class RayTracerSmp{
 	final static Point3d CAMERACENTER = new Point3d( 0.0, 1.0, 2.0 );
@@ -27,13 +28,15 @@ public class RayTracerSmp{
 	private WorldGenerator genWorlds;
 
 	public static void main( String[] args ) throws Exception{
-		int seed = -1;
+		int seed = new Random().nextInt();
 		try{
 			seed = Integer.parseInt(args[0]);
 		}catch( Exception e ){}
 		
+		System.out.println( "Seed: " + seed );
+		
 //        RayTracerSmp rt = new RayTracerSmp( new WorldMarbles( 5, 10, true, seed ) );
-		RayTracerSmp rt = new RayTracerSmp( new WorldAntimatter( 5, 20, seed ) );
+		RayTracerSmp rt = new RayTracerSmp( new WorldAntimatter( 24*20, 20, seed ) );
         // RayTracerSmp rt = new RayTracerSmp( new WorldMarbleGrid( 10, WorldMarbleGrid.DIAGONAL ) );
         rt.cleanup();
         long startTime = System.currentTimeMillis();
