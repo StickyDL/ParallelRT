@@ -67,7 +67,7 @@ public class WorldAntimatter extends WorldGenerator{
 		double ka = 0.2;
 		double kd = 0.2;
 		double ks = 0.4;
-		double kr = 0.0;
+		double kr = 0.3;
 		double kt = 0.5;
 		int ke = 50;
 
@@ -114,9 +114,9 @@ public class WorldAntimatter extends WorldGenerator{
 		triAVertices.add( PLANEVERTRF );
 		triAVertices.add( PLANEVERTRR );
 
-		triBVertices.add( PLANEVERTLR );
-		triBVertices.add( PLANEVERTRR );
 		triBVertices.add( PLANEVERTLF );
+		triBVertices.add( PLANEVERTRR );
+		triBVertices.add( PLANEVERTLR );
 		
 		int frame = 0;
 		BufferedReader br = null;
@@ -144,8 +144,8 @@ public class WorldAntimatter extends WorldGenerator{
 				for( int k = 0; k < centers.length; k++ ){
 					world.add( new Sphere( centers[k], radius, colors[k], ka, kd, ks, ke, kr, kt ) );
 				}
-				world.add( new Triangle( triAVertices, new Vector3d( 0, 1, 0 ), new Color( 0, 0, 0 ), 1 ) );
-				world.add( new Triangle( triBVertices, new Vector3d( 0, 1, 0 ), new Color( 0, 0, 0 ), 1 ) );
+                world.add( new Triangle( triAVertices, new Color( 255, 255, 255 ), 0.2, 0.4, 0.6, 20, 0.6, 0.0, 1 ) );
+                world.add( new Triangle( triBVertices, new Color( 255, 255, 255 ), 0.2, 0.4, 0.6, 20, 0.6, 0.0, 1 ) );
 		
 				world.add( new PointLight( LIGHTCENTER, new Color( 255.0, 255.0, 255.0 ) ) );
 				
