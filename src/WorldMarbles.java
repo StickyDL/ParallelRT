@@ -157,6 +157,47 @@ public class WorldMarbles extends WorldGenerator{
 			}
 		}
 
+		// Set up floor
+		ArrayList<Point3d> triAVertices = new ArrayList<Point3d>();
+		ArrayList<Point3d> triBVertices = new ArrayList<Point3d>();
+		ArrayList<Point3d> triCVertices = new ArrayList<Point3d>();
+		ArrayList<Point3d> triDVertices = new ArrayList<Point3d>();
+		ArrayList<Point3d> rectVertices = new ArrayList<Point3d>();
+
+		Point3d PLANEVERTLF = new Point3d( left, bottom, front );
+		Point3d PLANEVERTRF = new Point3d( right, bottom, front );
+		Point3d PLANEVERTRR = new Point3d( right, bottom, back );
+		Point3d PLANEVERTLR = new Point3d( left, bottom, back );
+
+		Point3d LEFTPLANEVERTLFB = new Point3d( left, bottom, front );
+		Point3d LEFTPLANEVERTRRB = new Point3d( left, bottom, back );
+		Point3d LEFTPLANEVERTLFT = new Point3d( left, top, front );
+		Point3d LEFTPLANEVERTRRT = new Point3d( left, top, back );
+
+		triAVertices.add( PLANEVERTLF );
+		triAVertices.add( PLANEVERTRF );
+		triAVertices.add( PLANEVERTRR );
+
+		triBVertices.add( PLANEVERTLF );
+		triBVertices.add( PLANEVERTRR );
+		triBVertices.add( PLANEVERTLR );
+
+		triCVertices.add( LEFTPLANEVERTLFB );
+		triCVertices.add( LEFTPLANEVERTRRB );
+		triCVertices.add( LEFTPLANEVERTLFT );
+
+		triDVertices.add( LEFTPLANEVERTLFT );
+		triDVertices.add( LEFTPLANEVERTRRB );
+		triDVertices.add( LEFTPLANEVERTRRT );
+		
+		rectVertices.add( PLANEVERTRF );
+		rectVertices.add( PLANEVERTLF );
+		rectVertices.add( PLANEVERTLR );
+		rectVertices.add( PLANEVERTRR );
+
+		// Set up light
+		Point3d LIGHTCENTER = new Point3d( 0.3, 2.75, 1.0 );
+		
 		// Loop to generate each world scene
 		int shaderIndex = r.nextInt( 4 );
 		shaderIndex = 1;
@@ -170,55 +211,14 @@ public class WorldMarbles extends WorldGenerator{
 				centers[k] = new Point3d( posx[k], posy[k], posz[k] );
 			}
 
-			// Set up floor
-			ArrayList<Point3d> triAVertices = new ArrayList<Point3d>();
-			ArrayList<Point3d> triBVertices = new ArrayList<Point3d>();
-			ArrayList<Point3d> triCVertices = new ArrayList<Point3d>();
-			ArrayList<Point3d> triDVertices = new ArrayList<Point3d>();
-			ArrayList<Point3d> rectVertices = new ArrayList<Point3d>();
-
-			Point3d PLANEVERTLF = new Point3d( left, bottom, front );
-			Point3d PLANEVERTRF = new Point3d( right, bottom, front );
-			Point3d PLANEVERTRR = new Point3d( right, bottom, back );
-			Point3d PLANEVERTLR = new Point3d( left, bottom, back );
-
-			Point3d LEFTPLANEVERTLFB = new Point3d( left, bottom, front );
-			Point3d LEFTPLANEVERTRRB = new Point3d( left, bottom, back );
-			Point3d LEFTPLANEVERTLFT = new Point3d( left, top, front );
-			Point3d LEFTPLANEVERTRRT = new Point3d( left, top, back );
-
-			triAVertices.add( PLANEVERTLF );
-			triAVertices.add( PLANEVERTRF );
-			triAVertices.add( PLANEVERTRR );
-
-			triBVertices.add( PLANEVERTLF );
-			triBVertices.add( PLANEVERTRR );
-			triBVertices.add( PLANEVERTLR );
-
-			triCVertices.add( LEFTPLANEVERTLFB );
-			triCVertices.add( LEFTPLANEVERTRRB );
-			triCVertices.add( LEFTPLANEVERTLFT );
-
-			triDVertices.add( LEFTPLANEVERTLFT );
-			triDVertices.add( LEFTPLANEVERTRRB );
-			triDVertices.add( LEFTPLANEVERTRRT );
-			
-			rectVertices.add( PLANEVERTRF );
-			rectVertices.add( PLANEVERTLF );
-			rectVertices.add( PLANEVERTLR );
-			rectVertices.add( PLANEVERTRR );
-
-			// Set up light
-			Point3d LIGHTCENTER = new Point3d( 0.3, 2.75, 1.0 );
-
 			// Add objects to world
 			for( int k = 0; k < centers.length; k++ ){
 				world.add( new Sphere( centers[k], radii[k], colors[k], ka[k], kd[k], ks[k], ke[k], kr[k], kt[k] ) );
 			}
             world.add( new Triangle( triAVertices, new Color( 255, 255, 255 ), 0.2, 0.4, 0.6, 20, 0.6, 0.0, shaderIndex ) );
             world.add( new Triangle( triBVertices, new Color( 255, 255, 255 ), 0.2, 0.4, 0.6, 20, 0.6, 0.0, shaderIndex ) );
-            world.add( new Triangle( triCVertices, new Color( 255, 255, 255 ), 0.2, 0.4, 0.6, 20, 0.6, 0.0, shaderIndex ) );
-            world.add( new Triangle( triDVertices, new Color( 255, 255, 255 ), 0.2, 0.4, 0.6, 20, 0.6, 0.0, shaderIndex ) );
+            // world.add( new Triangle( triCVertices, new Color( 255, 255, 255 ), 0.2, 0.4, 0.6, 20, 0.6, 0.0, shaderIndex ) );
+            // world.add( new Triangle( triDVertices, new Color( 255, 255, 255 ), 0.2, 0.4, 0.6, 20, 0.6, 0.0, shaderIndex ) );
             // world.add( new Rectangle(rectVertices, new Color(255, 255, 255), shaderIndex) );
 
 			world.add( new PointLight( LIGHTCENTER, new Color( 255.0, 255.0, 255.0 ) ) );
