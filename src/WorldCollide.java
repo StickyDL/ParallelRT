@@ -321,8 +321,20 @@ public class WorldCollide extends WorldGenerator{
 				            selfFinalVel.add(pt2);
 				            selfFinalVel.add(v1y);
 				            spdx[k] = selfFinalVel.x;
+				            if (spdx[k] < -5.0)
+				                spdx[k] = -5.0;
+				            if (spdx[k] > 5.0)
+				                spdx[k] = 5.0;
 				            spdy[k] = selfFinalVel.y;
+				            if (spdy[k] < -5.0)
+				                spdy[k] = -5.0;
+				            if (spdy[k] > 5.0)
+				                spdy[k] = 5.0;
 				            spdz[k] = selfFinalVel.z;
+				            if (spdz[k] < -5.0)
+				                spdz[k] = -5.0;
+				            if (spdz[k] > 5.0)
+				                spdz[k] = 5.0;
 				            
 				            double otherQ1 = (2*m1)/(m1+m2);
 				            double otherQ2 = (m2-m1)/(m1+m2);
@@ -333,10 +345,32 @@ public class WorldCollide extends WorldGenerator{
 				            otherFinalVel.add(otherPt2);
 				            otherFinalVel.add(v2y);
 				            spdx[p] = otherFinalVel.x;
+				            if (spdx[p] < -5.0)
+				                spdx[p] = -5.0;
+				            if (spdx[p] > 5.0)
+				                spdx[p] = 5.0;
 				            spdy[p] = otherFinalVel.y;
+				            if (spdy[p] < -5.0)
+				                spdy[p] = -5.0;
+				            if (spdy[p] > 5.0)
+				                spdy[p] = 5.0;
 				            spdz[p] = otherFinalVel.z;
+				            if (spdz[p] < -5.0)
+				                spdz[p] = -5.0;
+				            if (spdz[p] > 5.0)
+				                spdz[p] = 5.0;
+				                
+				            Vector3d moveSelf = new Vector3d(selfFinalVel);
+				            moveSelf.normalize();
+				            moveSelf.scale(sumRadii-distance);
+				            selfCenter.add(moveSelf);
 				            
-                            break;
+				            Vector3d moveOther = new Vector3d(otherFinalVel);
+				            moveOther.normalize();
+				            moveOther.scale(sumRadii-distance);
+				            otherCenter.add(moveOther);
+				            
+                            // break;
 				        }
 				    }
 				}
