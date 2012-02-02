@@ -106,8 +106,8 @@ public class RayTracer {
 		//Add Objects to World
 		world.add( new Sphere(LSPHERECENTER, LSPHERERADIUS, new Color(178.5, 178.5, 178.5), 1.0, 0.0)); //0, 255, 0
 		world.add( new Sphere(RSPHERECENTER, RSPHERERADIUS, new Color(255.0, 255.0, 255.0), 0.0, 0.85)); //200, 10, 10
-		world.add( new Triangle (triAVertices, new Vector3d(0,1,0), new Color(200, 200, 10)));
-		world.add( new Triangle (triBVertices, new Vector3d(0,1,0), new Color(200, 200, 10)));
+		world.add( new Triangle( triAVertices, new Color( 255, 255, 255 ), 0.2, 0.4, 0.6, 20, 0.6, 0.0, 1 ) );
+		world.add( new Triangle( triAVertices, new Color( 255, 255, 255 ), 0.2, 0.4, 0.6, 20, 0.6, 0.0, 1 ) );
 		
 		world.add( new PointLight(LIGHTCENTER, new Color(255.0, 255.0, 255.0)));
 		//world.add( new PointLight(LIGHTLEFT, new Color(255.0, 255.0, 255.0)));
