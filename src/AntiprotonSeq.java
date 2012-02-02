@@ -117,6 +117,10 @@ public class AntiprotonSeq
     	simulate( seed, 10.0, 0.00001, 2000, frames, num_protons );
     }
     
+    public static void simulate( long seed, int frames, int num_protons, double radius ){
+    	simulate( seed, radius, 0.00001, 2000, frames, num_protons );
+    }
+    
     public static void simulate( long seed, double radius, double dt, int steps, int snapshots, int num_protons ){
         // Start timing.
         long t1 = System.currentTimeMillis();
@@ -173,9 +177,9 @@ public class AntiprotonSeq
 
         // Stop timing.
         long t3 = System.currentTimeMillis();
-        System.out.println ((t2-t1) + " msec pre");
-        System.out.println ((t3-t2) + " msec calc");
-        System.out.println ((t3-t1) + " msec total");
+//        System.out.println ((t2-t1) + " msec pre");
+//        System.out.println ((t3-t2) + " msec calc");
+//        System.out.println ((t3-t1) + " msec total");
         }
 
 // Hidden operations.

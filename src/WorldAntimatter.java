@@ -1,11 +1,8 @@
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Random;
 
 import javax.vecmath.Point3d;
-import javax.vecmath.Vector3d;
 
 
 public class WorldAntimatter extends WorldGenerator{
@@ -26,10 +23,13 @@ public class WorldAntimatter extends WorldGenerator{
 	public WorldAntimatter( int frames, int particles, int seed ){
 		LinkedList<World> worldList = new LinkedList<World>();
 		System.out.println( "WorldAntimatter( " + frames + ", " + particles + ", " + seed + " )" );
+		System.out.println( "\tGenerating Worlds" );
 		
 		double centerx = 0;
-		double centerz = -2;
-		double centery = 0.2;
+		double centerz = -4;
+		double centery = 0.25;
+		double widthx = 6;
+		double widthz = 7;
 		
 		double radius = 0.1;
 		
@@ -42,7 +42,7 @@ public class WorldAntimatter extends WorldGenerator{
 		int ke = 50;
 		
 		for( int i = 0; i < particles; i++ ){
-			if( i % 2 == 0 ){
+			if( (i&1) == 0 ){
 				colors[i] = new Color(255,20,147); // Pink
 			}else{
 				colors[i] = new Color(0,50,220); // Blue
@@ -76,7 +76,10 @@ public class WorldAntimatter extends WorldGenerator{
 				// Set up spheres
 				Point3d centers[] = new Point3d[particles];
 				for( int k = 0; k < centers.length; k++ ){
-					centers[k] = new Point3d( ( points[i*particles+k][0] - 5 ) * .75, 0.25, -points[i*particles+k][1] * .75 );
+					centers[k] = new Point3d(
+							( points[i*particles+k][0] - 5 ) * ( widthx / 10.0 ) + centerx,
+							centery,
+							( points[i*particles+k][1] - 5 ) * ( widthz / 10.0 ) + centerz );
 				}
 				
 				// Set up light
@@ -93,6 +96,7 @@ public class WorldAntimatter extends WorldGenerator{
 			}
 
 		worlds = worldList.toArray( new World[0] );
+		System.out.println( "\tGeneration Finished" );
 	}
 
 	public World[] getWorlds() {
