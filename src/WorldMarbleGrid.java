@@ -142,8 +142,8 @@ public class WorldMarbleGrid extends WorldGenerator{
 			for( int k = 0; k < centers.length; k++ ){
 				world.add( new Sphere( centers[k], radius, colors[k], ka, kd, ks, ke, kr, kt ) );
 			}
-			world.add( new Triangle( triAVertices, new Vector3d( 0, 1, 0 ), new Color( 0, 0, 0 ), 1 ) );
-			world.add( new Triangle( triBVertices, new Vector3d( 0, 1, 0 ), new Color( 0, 0, 0 ), 1 ) );
+			world.add( new Triangle( triAVertices, new Color( 0, 0, 0 ), 1 ) );
+			world.add( new Triangle( triBVertices, new Color( 0, 0, 0 ), 1 ) );
 
 			world.add( new PointLight( LIGHTCENTER, new Color( 255.0, 255.0, 255.0 ) ) );
 			

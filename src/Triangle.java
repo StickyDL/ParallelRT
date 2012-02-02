@@ -7,14 +7,14 @@ public class Triangle extends GraphicObject {
 	ArrayList<Point3d> vertices;
 	Shader shader = null;
 
-	public Triangle(ArrayList<Point3d> vertices, Vector3d normal, Color ambc)
+	public Triangle(ArrayList<Point3d> vertices, Color ambc)
 	{
-        this(vertices, normal, ambc, 0.2, 0.4, 0.6, 20, 0.0, 0.0, 0);
+        this(vertices, ambc, 0.2, 0.4, 0.6, 20, 0.0, 0.0, 0);
     }
     
-    public Triangle(ArrayList<Point3d> vertices, Vector3d normal, Color ambc, int shaderIndex)
+    public Triangle(ArrayList<Point3d> vertices, Color ambc, int shaderIndex)
     {
-        this(vertices, normal, ambc, 0.2, 0.4, 0.6, 20, 0.6, 0.0, shaderIndex);
+        this(vertices, ambc, 0.2, 0.4, 0.6, 20, 0.0, 0.0, shaderIndex);
     }
 
     /*
@@ -30,10 +30,9 @@ public class Triangle extends GraphicObject {
 	    kt - Transparency (0-1). 0=Non-Transparent 1=Transparent
 	    shaderIndex - 0=No Shader 1=Checkerboard 2=PolkaDot 3=Ripple
 	*/
-    public Triangle(ArrayList<Point3d> vertices, Vector3d normal, Color ambc, double ka, double kd, double ks, int ke, double kr, double kt, int shaderIndex)
+    public Triangle(ArrayList<Point3d> vertices, Color ambc, double ka, double kd, double ks, int ke, double kr, double kt, int shaderIndex)
 	{
 		this.vertices = vertices;
-		this.normal = normal;
 		this.ambcolor = ambc;
 		this.ka = ka;
 		this.kd = kd;
@@ -45,6 +44,12 @@ public class Triangle extends GraphicObject {
         }
 		this.kr = kr;
 		this.kt = kt;
+		
+        Vector3d p3p2 = new Vector3d(vertices.get(2).x-vertices.get(1).x, vertices.get(2).y-vertices.get(1).y, vertices.get(2).z-vertices.get(1).z);
+        Vector3d p1p2 = new Vector3d(vertices.get(0).x-vertices.get(1).x, vertices.get(0).y-vertices.get(1).y, vertices.get(0).z-vertices.get(1).z);
+        this.normal = new Vector3d();
+		this.normal.cross(p3p2,p1p2);
+		this.normal.normalize();
 		
 		if ( shaderIndex == 1 ) {
     		//Checker Board Shader
