@@ -98,7 +98,11 @@ public class WorldAntimatter extends WorldGenerator{
 			
 			acc[i] = new Vector3d( 0, 0, 0 );
 			
-			colors[i] = new Color(255,20,147); // Pink
+			if( i % 2 == 0 ){
+				colors[i] = new Color(255,20,147); // Pink
+			}else{
+				colors[i] = new Color(0,50,220); // Blue
+			}
 		}
 		
 		// Set up floor data
@@ -134,7 +138,7 @@ public class WorldAntimatter extends WorldGenerator{
 					String[] vals = br.readLine().trim().split(" ");
 //					centers[k] = new Point3d( posx[k], posy[k], posz[k] );
 //					centers[k] = new Point3d( pos[k].x, pos[k].y, pos[k].z );
-					centers[k] = new Point3d( Double.parseDouble(vals[0]) - 5, 0.25, -Double.parseDouble(vals[1]) );
+					centers[k] = new Point3d( ( Double.parseDouble(vals[0]) - 5 ) * .75, 0.25, -Double.parseDouble(vals[1]) * .75 );
 				}
 				
 				// Set up light
