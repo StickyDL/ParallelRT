@@ -290,75 +290,55 @@ public class WorldCollide extends WorldGenerator{
 				        Vector3d otherVel = new Vector3d(spdx[p], spdy[p], spdz[p]);
 				        double distance = selfCenter.distance(otherCenter);
 				        double sumRadii = radii[k]+radii[p];
-				        if (distance <= sumRadii) { // Collision
-				            Vector3d x = new Vector3d();
-				            x.sub(selfCenter, otherCenter);
+				        if (distance < sumRadii) { // Collision
+				            Vector3d x = new Vector3d(selfCenter);
+				            x.sub(otherCenter);
 				            x.normalize();
-				            
-				            Vector3d v1 = selfVel;
+				       
+				            // 
+				            Vector3d v1 = new Vector3d(selfVel);
 				            double x1 = x.dot(v1);
-				            Vector3d v1x = x;
+				            Vector3d v1x = new Vector3d(x);
 				            v1x.scale(x1);
-				            Vector3d v1y = v1;
+				            Vector3d v1y = new Vector3d(v1);
 				            v1y.sub(v1x);
 				            double m1 = 0.5;
 				            
+				            // 
 				            x.scale(-1);
-				            Vector3d v2 = otherVel;
+				            Vector3d v2 = new Vector3d(otherVel);
 				            double x2 = x.dot(v2);
-				            Vector3d v2x = x;
+				            Vector3d v2x = new Vector3d(x);
 				            v2x.scale(x2);
-				            Vector3d v2y = v2;
+				            Vector3d v2y = new Vector3d(v2);
 				            v2y.sub(v2x);
 				            double m2 = 0.5;
 				            
+				            // 
 				            double selfQ1 = (m1-m2)/(m1+m2);
 				            double selfQ2 = (2*m2)/(m1+m2);
-				            Vector3d selfFinalVel = v1x;
+				            Vector3d selfFinalVel = new Vector3d(v1x);
 				            selfFinalVel.scale(selfQ1);
-        		            Vector3d pt2 = v2x;
+        		            Vector3d pt2 = new Vector3d(v2x);
                             pt2.scale(selfQ2);
 				            selfFinalVel.add(pt2);
 				            selfFinalVel.add(v1y);
 				            spdx[k] = selfFinalVel.x;
-				            if (spdx[k] < -5.0)
-				                spdx[k] = -5.0;
-				            if (spdx[k] > 5.0)
-				                spdx[k] = 5.0;
 				            spdy[k] = selfFinalVel.y;
-				            if (spdy[k] < -5.0)
-				                spdy[k] = -5.0;
-				            if (spdy[k] > 5.0)
-				                spdy[k] = 5.0;
 				            spdz[k] = selfFinalVel.z;
-				            if (spdz[k] < -5.0)
-				                spdz[k] = -5.0;
-				            if (spdz[k] > 5.0)
-				                spdz[k] = 5.0;
 				            
+				            // 
 				            double otherQ1 = (2*m1)/(m1+m2);
 				            double otherQ2 = (m2-m1)/(m1+m2);
-				            Vector3d otherFinalVel = v1x;
+				            Vector3d otherFinalVel = new Vector3d(v1x);
 				            otherFinalVel.scale(otherQ1);
-				            Vector3d otherPt2 = v2x;
+				            Vector3d otherPt2 = new Vector3d(v2x);
 				            otherPt2.scale(otherQ2);
 				            otherFinalVel.add(otherPt2);
 				            otherFinalVel.add(v2y);
 				            spdx[p] = otherFinalVel.x;
-				            if (spdx[p] < -5.0)
-				                spdx[p] = -5.0;
-				            if (spdx[p] > 5.0)
-				                spdx[p] = 5.0;
 				            spdy[p] = otherFinalVel.y;
-				            if (spdy[p] < -5.0)
-				                spdy[p] = -5.0;
-				            if (spdy[p] > 5.0)
-				                spdy[p] = 5.0;
 				            spdz[p] = otherFinalVel.z;
-				            if (spdz[p] < -5.0)
-				                spdz[p] = -5.0;
-				            if (spdz[p] > 5.0)
-				                spdz[p] = 5.0;
 				                
 				            Vector3d moveSelf = new Vector3d(selfFinalVel);
 				            moveSelf.normalize();
@@ -371,6 +351,7 @@ public class WorldCollide extends WorldGenerator{
 				            otherCenter.add(moveOther);
 				            
                             // break;
+				            
 				        }
 				    }
 				}
