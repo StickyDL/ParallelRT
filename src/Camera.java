@@ -27,8 +27,8 @@ public class Camera {
 	private double deltaX = (XMAX - XMIN) / XRES;
 	private double[] pixelArray;
 	private double BACKGRD_RED = 0;
-	private double BACKGRD_GREEN = 50;
-	private double BACKGRD_BLUE = 255;
+	private double BACKGRD_GREEN = 0;
+	private double BACKGRD_BLUE = 0;
 	World w;
 	Point3d position;
 	Point3d lookat;
