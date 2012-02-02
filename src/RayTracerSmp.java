@@ -32,7 +32,8 @@ public class RayTracerSmp{
 			seed = Integer.parseInt(args[0]);
 		}catch( Exception e ){}
 		
-        RayTracerSmp rt = new RayTracerSmp( new WorldMarbles( 5, 50, true, seed ) );
+//        RayTracerSmp rt = new RayTracerSmp( new WorldMarbles( 5, 10, true, seed ) );
+		RayTracerSmp rt = new RayTracerSmp( new WorldAntimatter( 5, 20, seed ) );
         // RayTracerSmp rt = new RayTracerSmp( new WorldMarbleGrid( 10, WorldMarbleGrid.DIAGONAL ) );
         rt.cleanup();
         long startTime = System.currentTimeMillis();
