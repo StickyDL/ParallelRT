@@ -32,6 +32,7 @@ public class CameraSmp {
 	private double deltaY = (YMAX - YMIN) / YRES;
 	private double deltaX = (XMAX - XMIN) / XRES;
 	private double[] pixelArray;
+	private double[][] pixelArray2 = new double[YRES][];
 	private double BACKGRD_RED = 220;
 	private double BACKGRD_GREEN = 220;
 	private double BACKGRD_BLUE = 255;
@@ -76,11 +77,15 @@ public class CameraSmp {
 		final Point3d camPoint = this.position;
 		
 
-		new ParallelTeam(8).execute( new ParallelRegion(){
+		new ParallelTeam(2).execute( new ParallelRegion(){
 			public void run() throws Exception{
 				execute( 0, YRES - 1, new IntegerForLoop(){
-					int pixelNum = 0;
-					double y;
+					int pixelNum = 0, renders, row, col;
+					double y, x;
+					long start;
+					Ray rtRay;
+					Color pixelColor;
+					double[] pixels;
 					
 					// Extra padding
 					long p0, p1, p2, p3, p4, p5, p6, p7;
@@ -91,41 +96,51 @@ public class CameraSmp {
 //					}
 					
 					public void run( int low, int high ) throws Exception{
-						long start = System.currentTimeMillis();
+						start = System.currentTimeMillis();
 						
 						pixelNum = low * XRES * 3;
-						int renders = 0;
+						renders = 0;
 						
 						y = YMAX - ( low * deltaY );
 						
 						// low + 1 is wrong, should be +0. Helps see the sections on the image
-						for( int row = low + 1; row <= high; row++ ){
-							for( double x = XMIN; x < XMAX; x = x + deltaX) {
+						for( row = low + 1; row <= high; row++ ){
+							x = XMIN;
+							pixels = new double[XRES * 3];
+							for( col = 0; col < XRES; col++ ) {
 								renders++;
 
-								Ray rtRay = new Ray( camPoint, new Vector3d(x-(camPoint.x), y-(camPoint.y), Z-(camPoint.z)));	
+								rtRay = new Ray( camPoint, new Vector3d(x-(camPoint.x), y-(camPoint.y), Z-(camPoint.z)));	
 							
 								//Illuminate the pixel given the ray
-								Color pixelColor = illuminate(rtRay, 1);
+								pixelColor = illuminate(rtRay, 1);
 								
-								pixelArray[pixelNum] = pixelColor.r;
-								pixelArray[pixelNum+1] = pixelColor.g;
-								pixelArray[pixelNum+2] = pixelColor.b;
+//								pixelArray[pixelNum] = pixelColor.r;
+//								pixelArray[pixelNum+1] = pixelColor.g;
+//								pixelArray[pixelNum+2] = pixelColor.b;
+								
+								pixels[col] = pixelColor.r;
+								pixels[col+1] = pixelColor.g;
+								pixels[col+2] = pixelColor.b;
+								
 									
-								if(pixelArray[pixelNum] > 255)
-									pixelArray[pixelNum] = 255;
-								if(pixelArray[pixelNum+1] > 255)
-									pixelArray[pixelNum+1] = 255;
-								if(pixelArray[pixelNum+2] > 255)
-									pixelArray[pixelNum+2] = 255;
-								pixelNum += 3;
-									
+//								if(pixelArray[pixelNum] > 255)
+//									pixelArray[pixelNum] = 255;
+//								if(pixelArray[pixelNum+1] > 255)
+//									pixelArray[pixelNum+1] = 255;
+//								if(pixelArray[pixelNum+2] > 255)
+//									pixelArray[pixelNum+2] = 255;
+//								pixelNum += 3;
+								
+								x += deltaX;
+								
 //								pixel_count++;
 							}
 //							if( progress != null ){
 //								progress.setValue( pixel_count );
 //							}
-							y = y - deltaY;
+							pixelArray2[row] = pixels;
+							y -= deltaY;
 						}
 						System.out.println( low + " - " + high + " Done.\t" + ( System.currentTimeMillis() - start) + "ms\twith " + renders + " renders");
 					}
@@ -144,28 +159,39 @@ public class CameraSmp {
 
 	}
 	
+	private static double dist( Point3d a, Point3d b ){
+		double val = ( a.x - b.x ) + ( a.y - b.y ) + ( a.z - b.z );
+		return val;
+	}
+	
 	public Color illuminate(Ray r, int depth){
 		Color lightF = new Color(0,0,0);
 		Color light = new Color(0,0,0);
 		int objIndex = -1;
+		
 		Point3d iPoint = new Point3d(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
+		double minDist = Double.MAX_VALUE, tempDist;
+		
 		//Find the object closest to the Origin of the Ray
 		for( int i=0; i<w.objectList.size(); i++) {
 			Point3d inter = w.objectList.get(i).intersect(r);
 			if( inter != null) {
-				if( r.origin.distance(inter) < r.origin.distance(iPoint)) {
-					//System.out.println("(" + inter.x + ", " + inter.y + ", " + inter.z + ")");
+				tempDist = dist( r.origin, inter );
+				if( tempDist < minDist ) {
 					iPoint = inter;
+					minDist = tempDist;
 					objIndex = i;
 				}
 			}
 		}
+		
 		//If no object was found, set color to background
 		if( iPoint.x == Double.MAX_VALUE && iPoint.y == Double.MAX_VALUE && iPoint.z == Double.MAX_VALUE )
 			lightF = new Color(BACKGRD_RED, BACKGRD_GREEN, BACKGRD_BLUE);
 		//Else determine color for object
 		else {
-			Vector3d N = w.objectList.get(objIndex).normal;
+			Vector3d N = w.objectList.get(objIndex).getNormal(iPoint);
+//			Vector3d N = w.objectList.get(objIndex).normal;
 			N.normalize();
 			//Retrieve object constants - Checkpoint 3
 			double ka = w.objectList.get(objIndex).ka;
