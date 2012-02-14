@@ -38,18 +38,24 @@ public class Sphere extends GraphicObject {
 	}
 	
 	 public Point3d intersect(Ray r){
+         double dx=0.0, dy=0.0, dz=0.0, b=0.0, c=0.0, underRoot=0.0, t1=0.0, t2=0.0, t=-1.0;
+         double xintersect=0.0, yintersect=0.0, zintersect=0.0;
+         Point3d result = new Point3d();
+         
+         // Extra Padding
+         long p0, p1, p2, p3, p4, p5, p6, p7;
+         long p8, p9, pa, pb, pc, pd, pe, pf;
 
-		 double dx = r.direction.x;
-		 double dy = r.direction.y;
-		 double dz = r.direction.z;
+		 dx = r.direction.x;
+		 dy = r.direction.y;
+		 dz = r.direction.z;
 
-		 double b = 2 * ((dx*(r.origin.x - center.x)) + (dy*(r.origin.y - center.y)) + (dz*(r.origin.z - center.z)));
-		 double c = ((r.origin.x - center.x)*(r.origin.x - center.x)) + ((r.origin.y - center.y)*(r.origin.y - center.y)) + ((r.origin.z - center.z)*(r.origin.z - center.z)) - (radius * radius);
+		 b = 2 * ((dx*(r.origin.x - center.x)) + (dy*(r.origin.y - center.y)) + (dz*(r.origin.z - center.z)));
+		 c = ((r.origin.x - center.x)*(r.origin.x - center.x)) + ((r.origin.y - center.y)*(r.origin.y - center.y)) + ((r.origin.z - center.z)*(r.origin.z - center.z)) - (radius * radius);
 
-		 double underRoot = (b * b) - (4 * c);
+		 underRoot = (b * b) - (4 * c);
 
-		 double t1, t2;
-		 double t = -1;
+		 t = -1;
 
 		 if( underRoot < 0 ) {
 			 //no intersection
@@ -76,19 +82,32 @@ public class Sphere extends GraphicObject {
 			}
 		 }
 
-		double xintersect = r.origin.x + (dx * t);
-		double yintersect = r.origin.y + (dy * t);
-		double zintersect = r.origin.z + (dz * t) - 0.0000001;
-
-		//calculate the surface normal at the intersection 
-		double xnorm = (xintersect - center.x) / radius;
-		double ynorm = (yintersect - center.y) / radius;
-		double znorm = (zintersect - center.z) / radius;
+		xintersect = r.origin.x + (dx * t);
+		yintersect = r.origin.y + (dy * t);
+		zintersect = r.origin.z + (dz * t) - 0.0000001;
+		
+		result.set(xintersect, yintersect, zintersect);
+	
+		return result; 
+	}
+	
+	public Vector3d getNormal(Point3d point) {
+	    //calculate the surface normal at the intersection
+	    double xnorm=0.0, ynorm=0.0, znorm=0.0;
+	    Vector3d result = new Vector3d();
+	    
+        // Extra Padding
+	    long p0, p1, p2, p3, p4, p5, p6, p7;
+        long p8, p9, pa, pb, pc, pd, pe, pf;
+        
+		xnorm = (point.x - center.x) / radius;
+		ynorm = (point.y - center.y) / radius;
+		znorm = (point.z - center.z) / radius;
+		
+		result.set(xnorm, ynorm, znorm);
 			
 		//Surface normal vector 
-		normal = new Vector3d(xnorm, ynorm, znorm);
-			
-		return new Point3d(xintersect, yintersect, zintersect); 
+		return result;
 	}
 	 
 	public Color getColor(Point3d point) {
