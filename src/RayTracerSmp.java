@@ -25,6 +25,7 @@ public class RayTracerSmp{
 	
 	final static int THREADS = ParallelTeam.getDefaultThreadCount();
 	
+	private static boolean GUI = false;
 	private WorldGenerator genWorlds;
 
 	public static void main( String[] args ) throws Exception{
@@ -41,7 +42,7 @@ public class RayTracerSmp{
         rt.cleanup();
         long startTime = System.currentTimeMillis();
 		rt.render();
-		System.out.println("Time: " + (System.currentTimeMillis() - startTime) + "msec");
+		System.out.println("Total:  " + (System.currentTimeMillis() - startTime) + "msec");
 
 		PlayMovie.main( new String[]{} );
 	}
@@ -78,47 +79,54 @@ public class RayTracerSmp{
 		// Setup worlds to render
 		final World[] worlds = genWorlds.getWorlds();
 
-		// Setup progress window
-		JFrame frame = new JFrame( "Rendering..." );
-		frame.setBounds( 0, 0, 300, 50 * THREADS + 50 );
-		frame.setLayout( new BorderLayout() );
-		frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
-
-		// Create progress bars
-		final JProgressBar main = new JProgressBar( 0, worlds.length );
+		final JProgressBar main = null;
 		final JProgressBar[] bars = new JProgressBar[THREADS];
-		for( int i = 0; i < bars.length; i++ ){
-			bars[i] = new JProgressBar();
-			bars[i].setValue( 0 );
-			bars[i].setStringPainted( true );
+		
+		if( GUI ){
+			// Setup progress window
+			JFrame frame = new JFrame( "Rendering..." );
+			frame.setBounds( 0, 0, 300, 50 * THREADS + 50 );
+			frame.setLayout( new BorderLayout() );
+			frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
+	
+			// Create progress bars
+//			final JProgressBar main = new JProgressBar( 0, worlds.length );
+//			final JProgressBar[] bars = new JProgressBar[THREADS];
+			for( int i = 0; i < bars.length; i++ ){
+				bars[i] = new JProgressBar();
+				bars[i].setValue( 0 );
+				bars[i].setStringPainted( true );
+			}
+			main.setValue( 0 );
+			main.setStringPainted( true );
+			main.setString( "Rendering" );
+	
+			// Setup left panel, with progress bar labels
+			JPanel left = new JPanel();
+			left.setLayout( new GridLayout( THREADS + 1, 1 ) );
+			left.add( new JLabel( "Total:" ) );
+			for( int i = 0; i < bars.length; i++ ){
+				left.add( new JLabel( "Frame:" ) );
+			}
+	
+			// Setup right panel, with progress bars
+			JPanel right = new JPanel();
+			right.setLayout( new GridLayout( THREADS + 1, 1 ) );
+			right.add( main );
+			for( int i = 0; i < bars.length; i++ ){
+				right.add( bars[i] );
+			}
+	
+			// Finalize layout and display
+			frame.add( left, BorderLayout.WEST );
+			frame.add( right, BorderLayout.CENTER );
+			frame.setVisible( true );
 		}
-		main.setValue( 0 );
-		main.setStringPainted( true );
-		main.setString( "Rendering" );
-
-		// Setup left panel, with progress bar labels
-		JPanel left = new JPanel();
-		left.setLayout( new GridLayout( THREADS + 1, 1 ) );
-		left.add( new JLabel( "Total:" ) );
-		for( int i = 0; i < bars.length; i++ ){
-			left.add( new JLabel( "Frame:" ) );
-		}
-
-		// Setup right panel, with progress bars
-		JPanel right = new JPanel();
-		right.setLayout( new GridLayout( THREADS + 1, 1 ) );
-		right.add( main );
-		for( int i = 0; i < bars.length; i++ ){
-			right.add( bars[i] );
-		}
-
-		// Finalize layout and display
-		frame.add( left, BorderLayout.WEST );
-		frame.add( right, BorderLayout.CENTER );
-		frame.setVisible( true );
 
 		final SharedObject<JProgressBar> sharedMain = new SharedObject<JProgressBar>( main );
 
+		final long[][] times = new long[worlds.length][];
+		
 		new ParallelTeam().execute( new ParallelRegion(){
 			public void run() throws Exception{
 				final ObjectOp<JProgressBar> op = new ObjectOp<JProgressBar>(){
@@ -140,21 +148,48 @@ public class RayTracerSmp{
 						int index = getThreadIndex();
 
 						// Render all worlds and save to file
-						for( int i = low; i <= high; i++ ){
-							bars[index].setString( "Frame " + i );
-							bars[index].setValue( 0 );
-							camera.render( worlds[i], new File( "render_" + String.format( "%1$04d", i ) + ".png" ), bars[index] );
-							sharedMain.reduce( null, op );
+						if( GUI ){
+							for( int i = low; i <= high; i++ ){
+								bars[index].setString( "Frame " + i );
+								bars[index].setValue( 0 );
+								times[i] = camera.render( worlds[i], new File( "render_" + String.format( "%1$04d", i ) + ".png" ), bars[index] );
+								sharedMain.reduce( null, op );
+							}
+						}else{
+							for( int i = low; i <= high; i++ ){
+								times[i] = camera.render( worlds[i], new File( "render_" + String.format( "%1$04d", i ) + ".png" ), null );
+							}
 						}
 
-						bars[index].setString( "Done!" );
+						if( GUI ){
+							bars[index].setString( "Done!" );
+						}
 					}
 				},
 						BarrierAction.NO_WAIT );
 			}
 		} );
 
-		main.setString( "Done!" );
+		if( GUI ){
+			main.setString( "Done!" );
+		}
+		
+		int renderTime = 0;
+		int ioTime = 0;
+		int ttlTime = 0;
+		for( int i = 0; i < times.length; i++ ){
+			renderTime += times[i][0];
+			ioTime += times[i][1];
+			ttlTime += times[i][0] + times[i][1];
+		}
+		
+		renderTime /= times.length;
+		ioTime /= times.length;
+		ttlTime /= times.length;
+		
+		System.out.println( "Average Frame Render Time: " + renderTime );
+		System.out.println( "Average Frame I/O Time   : " + ioTime );
+		System.out.println( "Average Frame Total Time : " + ttlTime );
 	}
 
 }

@@ -45,7 +45,8 @@ public class Camera {
 
 	}
 
-	public void render(World w, File outputFile, JProgressBar progress ) {
+	public long[] render(World w, File outputFile, JProgressBar progress ) {
+		long t1 = System.currentTimeMillis();
 		if( progress != null ){
 			progress.setMaximum( XRES * YRES );
 		}
@@ -105,13 +106,17 @@ public class Camera {
 		
 		raster.setPixels(0, 0, XRES, YRES, pixelArray);
 		
+		long t2 = System.currentTimeMillis();
 		try{
 			ImageIO.write(image, "png", outputFile );
 		}catch( Exception e ){
 			System.err.println( e.getMessage() );
 			e.printStackTrace();
 		}
-
+		long t3 = System.currentTimeMillis();
+//		System.out.println( "Render: " + ( t2 - t1 ) );
+//		System.out.println( "I/O:    " + ( t3 - t2 ) );
+		return new long[]{t2-t1,t3-t2};
 	}
 	
 	public Color illuminate(Ray r, int depth){
@@ -135,7 +140,7 @@ public class Camera {
 			lightF = new Color(BACKGRD_RED, BACKGRD_GREEN, BACKGRD_BLUE);
 		//Else determine color for object
 		else {
-			Vector3d N = w.objectList.get(objIndex).normal;
+			Vector3d N = w.objectList.get(objIndex).getNormal(iPoint);
 			N.normalize();
 			//Retrieve object constants - Checkpoint 3
 			double ka = w.objectList.get(objIndex).ka;

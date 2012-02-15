@@ -71,6 +71,8 @@ public class RayTracerSeq {
 		
 		final World[] worlds = genWorlds.getWorlds();
 		
+		long[][] times = new long[worlds.length][];
+		
 		if( false ){
 			// Use GUI
 		
@@ -110,7 +112,7 @@ public class RayTracerSeq {
 			for( int i = 0; i < worlds.length; i++ ){
 				bar.setString( "Frame " + i );
 				bar.setValue(0);
-				camera.render( worlds[i], new File( "render_" + String.format( "%1$04d" , i) + ".png" ), bar );
+				times[i] = camera.render( worlds[i], new File( "render_" + String.format( "%1$04d" , i) + ".png" ), bar );
 				main.setValue( i+1 );
 			}
 	
@@ -121,9 +123,26 @@ public class RayTracerSeq {
 			
 			// Render all worlds and save to file
 			for( int i = 0; i < worlds.length; i++ ){
-				camera.render( worlds[i], new File( "render_" + String.format( "%1$04d" , i) + ".png" ), null );
+				times[i] = camera.render( worlds[i], new File( "render_" + String.format( "%1$04d" , i) + ".png" ), null );
 			}
 		}
+		
+		int renderTime = 0;
+		int ioTime = 0;
+		int ttlTime = 0;
+		for( int i = 0; i < times.length; i++ ){
+			renderTime += times[i][0];
+			ioTime += times[i][1];
+			ttlTime += times[i][0] + times[i][1];
+		}
+		
+		renderTime /= times.length;
+		ioTime /= times.length;
+		ttlTime /= times.length;
+		
+		System.out.println( "Average Frame Render Time: " + renderTime );
+		System.out.println( "Average Frame I/O Time   : " + ioTime );
+		System.out.println( "Average Frame Total Time : " + ttlTime );
 
 	}
 
