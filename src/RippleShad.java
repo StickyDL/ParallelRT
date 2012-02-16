@@ -1,11 +1,30 @@
 import javax.vecmath.Point3d;
 import java.util.ArrayList;
 
+/**
+ * RippleShad class is a type of shader that can be applied to graphic objects.
+ * It gives the appearance of a ripple of colors on a object.
+ * This class is only accurately used on horizontal triangles at the moment.
+ *
+ * @author  Steve Glazer
+ * @author  Sara Jackson
+ * @author  Sam Milton
+ * @version 16-Feb-2012
+ */
 public class RippleShad extends Shader {
 	ArrayList<Color> colors;
 	
+	/**
+     * Constructor
+     * 
+     * Creates a RippleShad object
+     *
+     * @param origin    the origin of the shader
+     */
 	public RippleShad(Point3d origin) {
 		super(origin);
+		
+		// Colors are set statically for now.
 		this.colors = new ArrayList<Color>(10);
 		colors.add(new Color(156.6686932398956, 28.568113368400432, 141.63839555005856));
 		colors.add(new Color(99.70635987934406, 199.1531151475586, 247.91370794679878));
@@ -19,6 +38,15 @@ public class RippleShad extends Shader {
 		colors.add(new Color(53.806758239983665, 44.31825234013605, 232.5117080791454));
 	}
 	
+	/**
+     * Retrieves the color of the shader at the given point.
+     * Determines the placement of the point on the shader to determine
+     * the color.
+     *
+     * @param point     the point to get that color of the shader at
+     *
+     * @return the color at the given point
+     */
 	public Color shade(Point3d point) {
 		return colors.get((int)point.distance(origin));
 	}
