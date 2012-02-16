@@ -125,7 +125,7 @@ public class CameraSmp {
 		return val;
 	}
 	
-	public Color illuminate(Ray r, int depth, Color lightF){
+	public void illuminate(Ray r, int depth, Color lightF){
     	int maxDepth = 5;
     	double n = 1.0;
 		Color light = new Color(0,0,0);
@@ -163,7 +163,7 @@ public class CameraSmp {
 		    lightF.r = backgroundRed;
 		    lightF.g = backgroundGreen;
 		    lightF.b = backgroundBlue;
-		    return lightF;
+		    return;
 	    }
 
         // Vector3d N = w.objectList.get(objIndex).getNormal(iPoint);
@@ -259,10 +259,10 @@ public class CameraSmp {
 						Vector3d newN = new Vector3d(surfaceNorm.x * (2*ddotn), surfaceNorm.y * (2*ddotn), surfaceNorm.z * (2*ddotn));
 						Vector3d R = new Vector3d( (newN.x - D.x), (newN.y - D.y), (newN.z - D.z));
 						Ray reflectiveRay = new Ray(iPoint, R);
-						Color reflect = illuminate(reflectiveRay, depth+1, lightF);
-						light.r += kr*reflect.r;
-						light.g += kr*reflect.g;
-						light.b += kr*reflect.b;
+						illuminate(reflectiveRay, depth+1, lightF);
+						light.r += kr*lightF.r;
+						light.g += kr*lightF.g;
+						light.b += kr*lightF.b;
 						
 					}	
 				}
@@ -278,7 +278,6 @@ public class CameraSmp {
 					else {
 						nit = w.objectList.get(objIndex).n / n;
 						surfaceNorm.scale(-1.0);
-                        // N = new Vector3d(-N.x, -N.y, -N.z);
 					}
 					double alpha = nit;
 					double underSqRt = 1.0 + ((nit*nit) * ((negD.dot(surfaceNorm) * negD.dot(surfaceNorm)) - 1.0));
@@ -287,10 +286,10 @@ public class CameraSmp {
 						Vector3d T = new Vector3d(alpha*D.x+beta*surfaceNorm.x, alpha*D.y + beta*surfaceNorm.y, alpha*D.z + beta*surfaceNorm.z);
 						T.normalize();
 						Ray transmissionRay = new Ray(iPoint, T);
-						Color transmit = illuminate(transmissionRay, depth+1, lightF);
-						light.r += kt*transmit.r;
-						light.g += kt*transmit.g;
-						light.b += kt*transmit.b;
+						illuminate(transmissionRay, depth+1, lightF);
+						light.r += kt*lightF.r;
+						light.g += kt*lightF.g;
+						light.b += kt*lightF.b;
 					}
 					
 					else {
@@ -302,10 +301,10 @@ public class CameraSmp {
 							Vector3d newN = new Vector3d(surfaceNorm.x * (2*ddotn), surfaceNorm.y * (2*ddotn), surfaceNorm.z * (2*ddotn));
 							Ray reflectiveRay = new Ray(iPoint, new Vector3d( (newN.x - D.x), (newN.y - D.y), 
 												(newN.z - D.z)));
-							Color reflect = illuminate(reflectiveRay, depth+1, lightF);
-							light.r += kt*reflect.r;
-							light.g += kt*reflect.g;
-							light.b += kt*reflect.b;
+                            illuminate(reflectiveRay, depth+1, lightF);
+							light.r += kt*lightF.r;
+							light.g += kt*lightF.g;
+							light.b += kt*lightF.b;
 						
 						}
 						
@@ -325,7 +324,6 @@ public class CameraSmp {
 				lightF.b = light.b;
 			}
 		}
-		return lightF;
 	}
 
 }
