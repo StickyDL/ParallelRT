@@ -16,9 +16,11 @@ public abstract class GraphicObject {
 	double kr;
 	double kt;
 	
+	abstract boolean intersect(Ray r, Point3d iPoint);
 	abstract Point3d intersect(Ray r);
 	abstract Color getColor(Point3d point);
 	abstract Vector3d getNormal(Point3d point);
+	abstract void getNormal(Point3d point, Vector3d norm);
 
 }
 
