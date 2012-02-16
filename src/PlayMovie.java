@@ -17,12 +17,16 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 
-
+/**
+ * Reads png files from a directory and plays them like a movie
+ *
+ */
 public class PlayMovie {
 	
 	// Determines if a file selection dialog pops up or not
 	public static final boolean PICK_FOLDER = false;
 
+	
 	public static void main( String args[] ){
 		JFrame frame = new JFrame();
 		frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
@@ -64,7 +68,6 @@ public class PlayMovie {
 			for( int i = 0; i < files.length; i++ ){
 				if( files[i].getName().endsWith(".png") ){
 					images[index++] = new ImageIcon( ImageIO.read( files[i] ) );
-//					System.out.println( files[i].getName() );
 				}
 			}
 		}catch( Exception e ){
@@ -74,6 +77,7 @@ public class PlayMovie {
 		System.out.println( "PlayMovie: Loaded " + index + " frames (" + (index / 24.0) + "s)" );
 		
 		
+		// Set up GUI
 		JLabel label = new JLabel(images[0]);
 		final JToggleButton play = new JToggleButton("Play");
 		final JButton reset = new JButton( "Reset" );
@@ -119,6 +123,14 @@ public class PlayMovie {
 		boolean play = false;
 		boolean reset = false;
 		
+		/**
+		 * Creates a player
+		 * @param display JLabel which images will be displayed on
+		 * @param images  Array of images to be played, in order
+		 * @param frames  Number of frames to play
+		 * @param button  Play button
+		 * @param repeat  Repeat checkbox
+		 */
 		public Player( JLabel display, ImageIcon[] images, int frames, JToggleButton button, JCheckBox repeat ){
 			screen = display;
 			this.images = images;
@@ -129,6 +141,8 @@ public class PlayMovie {
 		}
 		
 		/**
+		 * If paused, plays the movie.
+		 * If playing, pauses the movie
 		 * 
 		 * @return True if it plays, false if it pauses
 		 */
@@ -143,6 +157,9 @@ public class PlayMovie {
 			return play;
 		}
 		
+		/**
+		 * Sets the player to the first frame
+		 */
 		public void reset(){
 			reset = true;
 			if( !play ){
@@ -154,20 +171,26 @@ public class PlayMovie {
 		 * Thread for playing the frames of the movie
 		 */
 		public void run(){
+			
+			// Loop until closed
 			while( true ){
 				
+				// Play frames
 				for( ; curframe < frames && play && !reset; curframe++ ){
 					screen.setIcon( images[curframe] );
 //					screen.validate();
 					try{
-						Thread.sleep(1000/24);
+						Thread.sleep(1000L/24L);
 					}catch( Exception e ){}
 				}
 				
+				// Check if playing stopped because last frame was hit
 				if( curframe >= frames ){
 					if( repeat.isSelected() ){
+						// If repeat is set, set flag to repeat video
 						reset = true;
 					}else{
+						// If repeat is not set, set gui to show it ended
 						curframe = 0;
 						button.setText("Replay");
 						button.setSelected(false);
@@ -175,12 +198,14 @@ public class PlayMovie {
 					}
 				}
 				
+				// If reset flag is set, reset frame back to first
 				if( reset ){
 					reset = false;
 					curframe = 0;
 					screen.setIcon( images[curframe] );
 //					screen.validate();
 				}else{
+					// Not set to repeat, sleep
 					try {
 						Thread.sleep(10000);
 					} catch (InterruptedException e) {}
