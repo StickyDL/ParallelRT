@@ -153,8 +153,8 @@ public class RayTracerSmp{
 		// Setup worlds to render
 		final World[] worlds = genWorlds.getWorlds();
 
-		final JProgressBar main = new JProgressBar( 0, worlds.length );
-		final JProgressBar[] bars = new JProgressBar[THREADS];
+		final JProgressBar main;// = new JProgressBar( 0, worlds.length );
+		final JProgressBar[] bars;// = new JProgressBar[THREADS];
 		
 		if( GUI ){
 			// Setup progress window
@@ -164,8 +164,8 @@ public class RayTracerSmp{
 			frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
 	
 			// Create progress bars
-//			final JProgressBar main = new JProgressBar( 0, worlds.length );
-//			final JProgressBar[] bars = new JProgressBar[THREADS];
+			main = new JProgressBar( 0, worlds.length );
+			bars = new JProgressBar[THREADS];
 			for( int i = 0; i < bars.length; i++ ){
 				bars[i] = new JProgressBar();
 				bars[i].setValue( 0 );
@@ -195,6 +195,9 @@ public class RayTracerSmp{
 			frame.add( left, BorderLayout.WEST );
 			frame.add( right, BorderLayout.CENTER );
 			frame.setVisible( true );
+		}else{
+			main = null;
+			bars = null;
 		}
 
 		final SharedObject<JProgressBar> sharedMain = new SharedObject<JProgressBar>( main );
