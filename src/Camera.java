@@ -80,19 +80,21 @@ public class Camera {
 		}
 		int pixel_count = 0;
 		
-		
 		WritableRaster raster = image.getRaster();
 		this.w = w;
 		Point3d camPoint = this.position;
-		
 		pixelNum = 0;
 
+        // For every row in the image
 		for(double y = YMAX; y > YMIN; y = y - deltaY) {
-
+            
+            // For every column in the image
 			for( double x = XMIN; x < XMAX; x = x + deltaX) {
 
 				if(pixelNum < pixelArray.length) {
-					//Super Sample
+					// Super Sample
+					// Multiple iterations performs anti-aliasing
+					// Turned off for this project
 					for(int supeSamp = 0; supeSamp < 1; supeSamp++) {
 						if(supeSamp != 0) {
 							double alterX = (rand.nextDouble() * 0.0026) - 0.0013;
@@ -100,9 +102,10 @@ public class Camera {
 							camPoint = new Point3d(position.x + alterX, position.y + alterY, position.z);
 						}
 
+                        // Shoot ray into the scene
 						Ray rtRay = new Ray( camPoint, new Vector3d(x-(camPoint.x), y-(camPoint.y), Z-(camPoint.z)));	
 					
-						//Illuminate the pixel given the ray
+						// Illuminate the pixel given the ray
 						Color pixelColor = illuminate(rtRay, 1);
 						if(supeSamp == 0) {
 							pixelArray[pixelNum] = pixelColor.r;
@@ -135,6 +138,8 @@ public class Camera {
 		raster.setPixels(0, 0, XRES, YRES, pixelArray);
 		
 		long t2 = System.currentTimeMillis();
+		
+		// Write out the imag file to disk
 		try{
 			ImageIO.write(image, "png", outputFile );
 		}catch( Exception e ){
