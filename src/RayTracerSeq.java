@@ -12,13 +12,17 @@ import java.awt.GridLayout;
 import java.io.File;
 import java.util.Random;
 
+/**
+ * Runs a ray tracer as a sequential program
+ *
+ */
 public class RayTracerSeq {
 	final static Point3d CAMERACENTER = new Point3d(0.0, 1.0, 2.0);
 	final static Point3d CAMERALOOKAT = new Point3d(0.0, 0.0, -1.0); //Direction
 	final static Vector3d CAMERAUP = new Vector3d(0.0, 1.0, 0.0);
 	
-	private static boolean GUI = false;
-	private static boolean PLAYER = true;
+	private static boolean GUI = false;   // Show rendering gui
+	private static boolean PLAYER = true; // Show player after rendering
 	
 	private WorldGenerator genWorlds;
 	
@@ -31,10 +35,12 @@ public class RayTracerSeq {
 		int marbles = 5;
 		String world = "marbles";
 		
+		// Display help
 		if( args.length == 1 && ( args[0].contains( "help" ) || args[0].equals( "-h" ) ) ){
 			usage();
 		}
 		
+		// Check commandline arguments
 		for( int i = 0; i < args.length; i++ ){
 			args[i] = args[i].toLowerCase();
 			
@@ -86,6 +92,7 @@ public class RayTracerSeq {
 			}
 		}
 		
+		// Set up world generator
 		if( world.equals( "marbles" ) ){
 			wg = new WorldMarbles( frames, marbles, true, seed );
 		}else if( world.equals( "antimatter" ) ){
@@ -98,9 +105,10 @@ public class RayTracerSeq {
 			usage();
 		}
 		
+		// Create ray tracer
 		RayTracerSeq rt = new RayTracerSeq( wg );
 
-		
+		// Cleanup existing render frames and run new render
 		rt.cleanup();
 	    long startTime = System.currentTimeMillis();
 		rt.render();
@@ -108,6 +116,7 @@ public class RayTracerSeq {
 		System.out.println("Time: " + runTime + "msec");
 		System.out.println( "Time / frame: " + ( runTime / frames ) );
 	
+		// Show movie player
 		if( PLAYER ){
 			PlayMovie.main( new String[]{} );
 		}
@@ -130,6 +139,9 @@ public class RayTracerSeq {
 		this.genWorlds = genWorlds;
 	}
 	
+	/**
+	 * Removes any existing rendered frames from current directory
+	 */
 	public void cleanup(){
 		// Erase previous render
 		File[] files = new File( "." ).listFiles();
@@ -211,6 +223,7 @@ public class RayTracerSeq {
 			}
 		}
 		
+		// Compute some timing metrics
 		int renderTime = 0;
 		int ioTime = 0;
 		int ttlTime = 0;
