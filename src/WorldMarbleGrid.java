@@ -9,15 +9,19 @@ import javax.vecmath.Vector3d;
  */
 public class WorldMarbleGrid extends WorldGenerator{
 
+
+	// Time step size
 	final static double step = 1.0 / 24.0;
 
+	// Bound area for marbles
 	final static double back = -10;
 	final static double front = 0;
 	final static double left = -2.25;
 	final static double right = 2.25;
 	final static double bottom = 0.0;
 	final static double top = 3.0;
-	
+
+	// How much speed drops when a wall is hit
 	final static double diminish = 0.9;
 	
 	final static int ROWS = 0;
@@ -28,14 +32,20 @@ public class WorldMarbleGrid extends WorldGenerator{
 
 	World[] worlds;
 	
+	/**
+	 * Makes a grid of superballs
+	 * @param marbles Sqrt of number of marbles to draw
+	 * @param style   Marble layout style [ROWS, COLUMNS, DIAGONAL]
+	 */
 	public WorldMarbleGrid( int marbles, int style ){
 		this( marbles, style, Integer.MAX_VALUE );
 	}
 	
 	/**
 	 * Makes a grid of superballs
-	 * @param marbles Sqrt of number of marbles to draw
-	 * @param style   Marble layout style [ROWS, COLUMNS, DIAGONAL]
+	 * @param marbles    Sqrt of number of marbles to draw
+	 * @param style      Marble layout style [ROWS, COLUMNS, DIAGONAL]
+	 * @param fraceCount Max number of frames to render
 	 */
 	public WorldMarbleGrid( int marbles, int style, int frameCount ){
 		frames = frameCount;
@@ -43,12 +53,15 @@ public class WorldMarbleGrid extends WorldGenerator{
 		System.out.println( "\tGenerating Worlds" );
 		LinkedList<World> worldList = new LinkedList<World>(); 
 		
+		// Center point for marble start location
 		double centerx = 0;
 		double centerz = -2;
 		double centery = 1;
 		
+		// Marble radius size
 		double radius = 0.1;
 		
+		// Marble properties
 		Color[] colors = new Color[marbles*marbles];
 		double ka = 0.2;
 		double kd = 0.2;
@@ -62,6 +75,7 @@ public class WorldMarbleGrid extends WorldGenerator{
 		double posy[] = new double[marbles*marbles];
 		double posz[] = new double[marbles*marbles];
 		
+		// Marble vertical speeds
 		double spdy[] = new double[marbles*marbles];
 		
 		// Generate coordinates for doing a diagonal layout
@@ -71,7 +85,6 @@ public class WorldMarbleGrid extends WorldGenerator{
 		int c = 0;
 		for( int count = 0; count < marbles * marbles; ){
 			for( int i = 0; i < row; i++ ){
-//				diag[r][c] = count++;
 				count++;
 				diag[r][c] = row;
 				r++;
@@ -144,12 +157,16 @@ public class WorldMarbleGrid extends WorldGenerator{
 			for( int k = 0; k < centers.length; k++ ){
 				world.add( new Sphere( centers[k], radius, colors[k], ka, kd, ks, ke, kr, kt ) );
 			}
+			
+			// Add floor
 			world.add( new Triangle( triAVertices, new Color( 0, 0, 0 ), 1 ) );
 			world.add( new Triangle( triBVertices, new Color( 0, 0, 0 ), 1 ) );
 
+			// Add light source
 			world.add( new PointLight( LIGHTCENTER, new Color( 255.0, 255.0, 255.0 ) ) );
 			
-			// Update object positions
+			
+			// Update marble positions
 			done = true;
 			for( int k = 0; k < centers.length; k++ ){
 				
@@ -196,6 +213,9 @@ public class WorldMarbleGrid extends WorldGenerator{
 		System.out.println( "\tGeneration Finished" );
 	}
 
+	/**
+	 * Gets the worlds produced by this world generator
+	 */
 	public World[] getWorlds(){
 		return worlds;
 	}
