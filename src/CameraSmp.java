@@ -56,16 +56,16 @@ public class CameraSmp {
                 	double deltaX = (xMax - xMin) / xRes;
 					long start;
 					Ray rtRay;
-					Color pixelColor;
+					Color pixelColor = new Color(0,0,0);
 					double[] pixels;
 					
 					// Extra padding
 					long p0, p1, p2, p3, p4, p5, p6, p7;
                     long p8, p9, pa, pb, pc, pd, pe, pf;
 					
-//					public IntegerSchedule schedule(){
-//						return IntegerSchedule.guided();
-//					}
+                    public IntegerSchedule schedule(){
+                        return IntegerSchedule.guided(5);
+                    }
 					
 					public void run( int low, int high ) throws Exception{
 						start = System.currentTimeMillis();
@@ -76,7 +76,7 @@ public class CameraSmp {
 						y = yMax - ( low * deltaY );
 						
 						// low + 1 is wrong, should be +0. Helps see the sections on the image
-						for( row = low + 1; row <= high; row++ ){
+						for( row = low + 0; row <= high; row++ ){
 							x = xMin;
                             pixels = new double[xRes * 3];
 							for( col = 0; col < xRes; col++ ) {
@@ -85,7 +85,7 @@ public class CameraSmp {
 								rtRay = new Ray( camPoint, new Vector3d(x-(camPoint.x), y-(camPoint.y), z-(camPoint.z)));	
 							
 								//Illuminate the pixel given the ray
-								pixelColor = illuminate(rtRay, 1);
+							    illuminate(rtRay, 1, pixelColor);
 								
                                 pixelArray[pixelNum] = pixelColor.r;
                                 pixelArray[pixelNum+1] = pixelColor.g;
@@ -137,18 +137,21 @@ public class CameraSmp {
 		return val;
 	}
 	
-	public Color illuminate(Ray r, int depth){
+	public Color illuminate(Ray r, int depth, Color lightF){
     	int maxDepth = 5;
     	double n = 1.0;
-		Color lightF = new Color(0,0,0);
 		Color light = new Color(0,0,0);
 		int objIndex = -1;
-		double backgroundRed = 220;
-    	double backgroundGreen = 220;
-    	double backgroundBlue = 255;
+		double backgroundRed = 0;
+    	double backgroundGreen = 0;
+    	double backgroundBlue = 0;
+    	boolean intersectFound = false, inShadow = false;
 		
 		Point3d iPoint = new Point3d(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
-		double minDist = Double.MAX_VALUE, tempDist;
+		Point3d tmpPoint = new Point3d();
+        Point3d shadowInter = new Point3d();
+		double minDist = Double.MAX_VALUE, tempDist = 0.0;
+		Vector3d surfaceNorm = new Vector3d();
 		
 		// Extra Padding
         long p0, p1, p2, p3, p4, p5, p6, p7;
@@ -156,84 +159,81 @@ public class CameraSmp {
 		
 		//Find the object closest to the Origin of the Ray
         for( int i=0; i<w.objectList.size(); i++) {
-            Point3d inter = w.objectList.get(i).intersect(r);
-            if( inter != null) {
-                tempDist = dist( r.origin, inter );
+            if ( w.objectList.get(i).intersect(r, tmpPoint) ) {
+                intersectFound = true;
+                tempDist = dist( r.origin, tmpPoint );
                 if( tempDist < minDist ) {
-                    iPoint = inter;
+                    iPoint.set(tmpPoint.x, tmpPoint.y, tmpPoint.z);
                     minDist = tempDist;
                     objIndex = i;
                 }
             }
         }
-        
-        // objIndex = 2;
-        // iPoint = new Point3d(0.3, 0.3, -2);
-		
 		
 		//If no object was found, set color to background
-		if( iPoint.x == Double.MAX_VALUE && iPoint.y == Double.MAX_VALUE && iPoint.z == Double.MAX_VALUE )
-			lightF = new Color(backgroundRed, backgroundGreen, backgroundBlue);
-		//Else determine color for object
-		else {
-			Vector3d N = w.objectList.get(objIndex).getNormal(iPoint);
-			N.normalize();
-			//Retrieve object constants - Checkpoint 3
-			double ka = w.objectList.get(objIndex).ka;
-			double kd = w.objectList.get(objIndex).kd;
-			double ks = w.objectList.get(objIndex).ks;
-			double ke = w.objectList.get(objIndex).ke;
-			double kr = w.objectList.get(objIndex).kr;
-			double kt = w.objectList.get(objIndex).kt;
+		if( !intersectFound ) {
+		    lightF.r = backgroundRed;
+		    lightF.g = backgroundGreen;
+		    lightF.b = backgroundBlue;
+		    return lightF;
+	    }
+
+        // Vector3d N = w.objectList.get(objIndex).getNormal(iPoint);
+		w.objectList.get(objIndex).getNormal(iPoint, surfaceNorm);
+        // N.normalize();
+		// Retrieve object constants
+		double ka = w.objectList.get(objIndex).ka;
+		double kd = w.objectList.get(objIndex).kd;
+		double ks = w.objectList.get(objIndex).ks;
+		double ke = w.objectList.get(objIndex).ke;
+		double kr = w.objectList.get(objIndex).kr;
+		double kt = w.objectList.get(objIndex).kt;
 					
-			//Checkpoint 4 - Get color. If object has a shader, returns color from that.
-			Color objectColor = w.objectList.get(objIndex).getColor(iPoint);
+		// Get color. If object has a shader, returns color from that.
+		Color objectColor = w.objectList.get(objIndex).getColor(iPoint);
 				
-			//Calculate Ambient Light
-			light = new Color(
-					ka * ((w.ambRed * objectColor.r)/255),
-					ka * ((w.ambGreen * objectColor.g)/255), 
-					ka * ((w.ambBlue * objectColor.b)/255));
+		// Calculate Ambient Light
+		light = new Color(
+				ka * ((w.ambRed * objectColor.r)/255),
+				ka * ((w.ambGreen * objectColor.g)/255), 
+				ka * ((w.ambBlue * objectColor.b)/255));
 				
 				
-			//create ray from light source to point of intersection
-			for( int lightIndex = 0; lightIndex < w.lightList.size(); lightIndex++ ) {
+		// Create ray from light source to point of intersection
+		for( int lightIndex = 0; lightIndex < w.lightList.size(); lightIndex++ ) {
 			Ray shadowRay = new Ray(iPoint, new Vector3d(w.lightList.get(lightIndex).position.x - iPoint.x, 
 							w.lightList.get(lightIndex).position.y - iPoint.y, w.lightList.get(lightIndex).position.z - iPoint.z));
 				
-			//check to see if shadow ray intersects any object.
-			Point3d lightInter = null;
-				
-			for( int j=0; j<w.objectList.size(); j++) {
+			// Check to see if shadow ray intersects any object.
+			for( int j=0; j<w.objectList.size(); j++ ) {
 				if( objIndex != j ) {
-					Point3d shadowInter = w.objectList.get(j).intersect(shadowRay);
+                    // Point3d shadowInter = w.objectList.get(j).intersect(shadowRay);
 				
-					if( shadowInter != null && (iPoint.distance(w.lightList.get(lightIndex).position) > shadowInter.distance(w.lightList.get(lightIndex).position))){
-						if(lightInter == null || (lightInter.distance(w.lightList.get(lightIndex).position) > shadowInter.distance(w.lightList.get(lightIndex).position))){
-							lightInter = shadowInter;
-						}
+					if( w.objectList.get(j).intersect(shadowRay, shadowInter) && (iPoint.distance(w.lightList.get(lightIndex).position) > shadowInter.distance(w.lightList.get(lightIndex).position))){
+                        inShadow = true;
+                        break;
 					}
 				}
 			}
 				
-			//If Point is not in shadow, continue finding shading
-			if(lightInter == null){
-				//calculating V and S
+			// If Point is not in shadow, continue finding shading
+            if ( !inShadow ) {
+				// Calculating V and S
 				Vector3d V = new Vector3d((this.position.x - iPoint.x), (this.position.y - iPoint.y),
 								(this.position.z - iPoint.z));
 				Vector3d S = new Vector3d(w.lightList.get(lightIndex).position.x-(iPoint.x), 
 								w.lightList.get(lightIndex).position.y-(iPoint.y), 
 								w.lightList.get(lightIndex).position.z-(iPoint.z));
 					
-				//Normalizing vectors
+				// Normalizing vectors
 				V.normalize();
 				S.normalize();
 					
-				//calculating S dot product N
-				double sdotn = S.dot(N);
+				// Calculating S dot product N
+				double sdotn = S.dot(surfaceNorm);
 					
 				if( sdotn > 0 ) {
-					//Diffuse color
+					// Diffuse color
 					Color diffuseColor = new Color( (kd * sdotn) * ((w.lightList.get(lightIndex).red * objectColor.r )/255), 
 									(kd * sdotn) * ((w.lightList.get(lightIndex).green * objectColor.g)/255), 
 									(kd * sdotn) * ((w.lightList.get(lightIndex).blue * objectColor.b)/255));
@@ -244,7 +244,7 @@ public class CameraSmp {
 					
 					double fraction = (2*sdotn);
 				
-					Vector3d newN = new Vector3d(N.x * fraction, N.y * fraction, N.z * fraction);
+					Vector3d newN = new Vector3d(surfaceNorm.x * fraction, surfaceNorm.y * fraction, surfaceNorm.z * fraction);
 					Vector3d R = new Vector3d(S.x - newN.x, S.y - newN.y, S.z - newN.z);
 					R.normalize();
 					
@@ -259,30 +259,26 @@ public class CameraSmp {
 				}
 			}
 				
-			//Determine Reflection and Transmission (Recursively) - Checkpoint 5 & 6
+			// Determine Reflection and Transmission (Recursively)
 			if( depth < maxDepth ){
-				//Reflection
+				// Reflection
 				if(kr > 0){
 					Vector3d D = new Vector3d(r.origin.x-iPoint.x, 
 									r.origin.y-iPoint.y, r.origin.z-iPoint.z);
 					D.normalize();
-					double ddotn = D.dot(N);
+					double ddotn = D.dot(surfaceNorm);
 					if(ddotn >= 0){
-						Vector3d newN = new Vector3d(N.x * (2*ddotn), N.y * (2*ddotn), N.z * (2*ddotn));
-						//newN.normalize();
+						Vector3d newN = new Vector3d(surfaceNorm.x * (2*ddotn), surfaceNorm.y * (2*ddotn), surfaceNorm.z * (2*ddotn));
 						Vector3d R = new Vector3d( (newN.x - D.x), (newN.y - D.y), (newN.z - D.z));
-						//R.normalize();
-						//System.out.println("Angle i: " + Math.acos(D.dot(N)));
-						//System.out.println("Angle r: " + Math.acos(R.dot(N)));
 						Ray reflectiveRay = new Ray(iPoint, R);
-						Color reflect = illuminate(reflectiveRay, depth+1);
+						Color reflect = illuminate(reflectiveRay, depth+1, lightF);
 						light.r += kr*reflect.r;
 						light.g += kr*reflect.g;
 						light.b += kr*reflect.b;
 						
 					}	
 				}
-				//Transmission
+				// Transmission
 				if(kt > 0.0) {
 					Vector3d D = new Vector3d(iPoint.x - r.origin.x, iPoint.y - r.origin.y, iPoint.z - r.origin.z);
 					D.normalize();
@@ -293,32 +289,32 @@ public class CameraSmp {
 					}
 					else {
 						nit = w.objectList.get(objIndex).n / n;
-						N = new Vector3d(-N.x, -N.y, -N.z);
+						surfaceNorm.scale(-1.0);
+                        // N = new Vector3d(-N.x, -N.y, -N.z);
 					}
 					double alpha = nit;
-					double underSqRt = 1.0 + ((nit*nit) * ((negD.dot(N) * negD.dot(N)) - 1.0));
+					double underSqRt = 1.0 + ((nit*nit) * ((negD.dot(surfaceNorm) * negD.dot(surfaceNorm)) - 1.0));
 					if( underSqRt > 0.0 ) {
-						double beta = (nit * (negD.dot(N))) - Math.sqrt(underSqRt);
-						Vector3d T = new Vector3d(alpha*D.x+beta*N.x, alpha*D.y + beta*N.y, alpha*D.z + beta*N.z);
+						double beta = (nit * (negD.dot(surfaceNorm))) - Math.sqrt(underSqRt);
+						Vector3d T = new Vector3d(alpha*D.x+beta*surfaceNorm.x, alpha*D.y + beta*surfaceNorm.y, alpha*D.z + beta*surfaceNorm.z);
 						T.normalize();
 						Ray transmissionRay = new Ray(iPoint, T);
-						Color transmit = illuminate(transmissionRay, depth+1);
+						Color transmit = illuminate(transmissionRay, depth+1, lightF);
 						light.r += kt*transmit.r;
 						light.g += kt*transmit.g;
 						light.b += kt*transmit.b;
 					}
 					
 					else {
-						//Calculate Reflection Ray Instead
+						// Calculate Reflection Ray Instead
 						D = new Vector3d(r.origin.x-iPoint.x, r.origin.y-iPoint.y, r.origin.z-iPoint.z);
 						D.normalize();
-						double ddotn = D.dot(N);
+						double ddotn = D.dot(surfaceNorm);
 						if(ddotn >= 0){
-							Vector3d newN = new Vector3d(N.x * (2*ddotn), N.y * (2*ddotn), N.z * (2*ddotn));
-//							Vector3d R = new Vector3d( (newN.x - D.x), (newN.y - D.y), (newN.z - D.z));
+							Vector3d newN = new Vector3d(surfaceNorm.x * (2*ddotn), surfaceNorm.y * (2*ddotn), surfaceNorm.z * (2*ddotn));
 							Ray reflectiveRay = new Ray(iPoint, new Vector3d( (newN.x - D.x), (newN.y - D.y), 
 												(newN.z - D.z)));
-							Color reflect = illuminate(reflectiveRay, depth+1);
+							Color reflect = illuminate(reflectiveRay, depth+1, lightF);
 							light.r += kt*reflect.r;
 							light.g += kt*reflect.g;
 							light.b += kt*reflect.b;
@@ -340,8 +336,7 @@ public class CameraSmp {
 				lightF.g = light.g;
 				lightF.b = light.b;
 			}
-			}
-		}		
+		}
 		return lightF;
 	}
 
