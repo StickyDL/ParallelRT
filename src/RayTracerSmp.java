@@ -109,7 +109,9 @@ public class RayTracerSmp{
         rt.cleanup();
         long startTime = System.currentTimeMillis();
 		rt.render();
-		System.out.println("Total:  " + (System.currentTimeMillis() - startTime) + "msec");
+		long runTime = System.currentTimeMillis() - startTime;
+		System.out.println("Time: " + runTime + "msec");
+		System.out.println( "Time / frame: " + ( runTime / frames ) );
 
 		if( PLAYER ){
 			PlayMovie.main( new String[]{} );

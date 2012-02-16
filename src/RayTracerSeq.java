@@ -94,7 +94,7 @@ public class RayTracerSeq {
 			usage();
 		}
 		
-		RayTracerSmp rt = new RayTracerSmp( wg );
+		RayTracerSeq rt = new RayTracerSeq( wg );
 
 		
 		rt.cleanup();
