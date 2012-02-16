@@ -7,6 +7,17 @@ import java.awt.image.WritableRaster;
 import java.io.File;
 import java.util.Random;
 
+/**
+ * The Camera class represents and camera in a virtual 3d
+ * scene. The camera is an object that can render the view
+ * it has of the 3d scene. This rendered image is then 
+ * written to an image file.
+ *
+ * @author  Steve Glazer
+ * @author  Sara Jackson
+ * @author  Sam Milton
+ * @version 16-Feb-2012
+ */
 public class Camera {
 
 	private final double XMIN = -0.5;
@@ -34,6 +45,13 @@ public class Camera {
 	Point3d lookat;
 	Vector3d up;
 
+    /**
+     * Constructor
+     *
+     * @param position   the center point of the camera
+     * @param lookat     the point at which the camera is facing
+     * @param up         the vector that determines which way is up
+     */
 	public Camera(Point3d position, Point3d lookat, Vector3d up){
 
 		this.position = position;
@@ -45,6 +63,16 @@ public class Camera {
 
 	}
 
+    /**
+     * Renders the 3d scene from the point of view of the camera.
+     * Writes the rendered image to file.
+     *
+     * @param w             world which contains the lights/objects to render
+     * @param outputFile    file to write the file to
+     * @param progress      progress bar to update with current status
+     *
+     * @return an array for the timings of rendering each frame
+     */
 	public long[] render(World w, File outputFile, JProgressBar progress ) {
 		long t1 = System.currentTimeMillis();
 		if( progress != null ){
@@ -114,16 +142,25 @@ public class Camera {
 			e.printStackTrace();
 		}
 		long t3 = System.currentTimeMillis();
-//		System.out.println( "Render: " + ( t2 - t1 ) );
-//		System.out.println( "I/O:    " + ( t3 - t2 ) );
 		return new long[]{t2-t1,t3-t2};
 	}
 	
+	/**
+     * A recursive method that returns the color for the pixel
+     * depending on the objects in the scene based on the given
+     * ray.
+     *
+     * @param r         ray into the scene
+     * @param depth     depth of the current recursive call
+     *
+     * @return the color of the pixel
+     */
 	public Color illuminate(Ray r, int depth){
 		Color lightF = new Color(0,0,0);
 		Color light = new Color(0,0,0);
 		int objIndex = -1;
 		Point3d iPoint = new Point3d(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
+		
 		//Find the object closest to the Origin of the Ray
 		for( int i=0; i<w.objectList.size(); i++) {
 			Point3d inter = w.objectList.get(i).intersect(r);
@@ -136,34 +173,36 @@ public class Camera {
 			}
 		}
 		//If no object was found, set color to background
-		if( iPoint.x == Double.MAX_VALUE && iPoint.y == Double.MAX_VALUE && iPoint.z == Double.MAX_VALUE )
+		if( iPoint.x == Double.MAX_VALUE && iPoint.y == Double.MAX_VALUE && iPoint.z == Double.MAX_VALUE ) {
 			lightF = new Color(BACKGRD_RED, BACKGRD_GREEN, BACKGRD_BLUE);
-		//Else determine color for object
-		else {
-			Vector3d N = w.objectList.get(objIndex).getNormal(iPoint);
-			N.normalize();
-			//Retrieve object constants - Checkpoint 3
-			double ka = w.objectList.get(objIndex).ka;
-			double kd = w.objectList.get(objIndex).kd;
-			double ks = w.objectList.get(objIndex).ks;
-			double ke = w.objectList.get(objIndex).ke;
-			double kr = w.objectList.get(objIndex).kr;
-			double kt = w.objectList.get(objIndex).kt;
-					
-			//Checkpoint 4 - Get color. If object has a shader, returns color from that.
-			Color objectColor = w.objectList.get(objIndex).getColor(iPoint);
+			return lightF;
+		}
+		
+		Vector3d N = w.objectList.get(objIndex).getNormal(iPoint);
+		N.normalize();
+		
+		// Retrieve object constants
+		double ka = w.objectList.get(objIndex).ka;
+		double kd = w.objectList.get(objIndex).kd;
+		double ks = w.objectList.get(objIndex).ks;
+		double ke = w.objectList.get(objIndex).ke;
+		double kr = w.objectList.get(objIndex).kr;
+		double kt = w.objectList.get(objIndex).kt;
 				
-			//Calculate Ambient Light
-			light = new Color(ka * ((w.ambRed * objectColor.r)/255), ka * ((w.ambGreen * objectColor.g)/255), 
-					ka * ((w.ambBlue * objectColor.b)/255));
+		// Get color. If object has a shader, returns color from that.
+		Color objectColor = w.objectList.get(objIndex).getColor(iPoint);
+			
+		// Calculate Ambient Light
+		light = new Color(ka * ((w.ambRed * objectColor.r)/255), ka * ((w.ambGreen * objectColor.g)/255), 
+				ka * ((w.ambBlue * objectColor.b)/255));
 				
 				
-			//create ray from light source to point of intersection
-			for( int lightIndex = 0; lightIndex < w.lightList.size(); lightIndex++ ) {
+		// Create ray from light source to point of intersection
+		for( int lightIndex = 0; lightIndex < w.lightList.size(); lightIndex++ ) {
 			Ray shadowRay = new Ray(iPoint, new Vector3d(w.lightList.get(lightIndex).position.x - iPoint.x, 
 							w.lightList.get(lightIndex).position.y - iPoint.y, w.lightList.get(lightIndex).position.z - iPoint.z));
 				
-			//check to see if shadow ray intersects any object.
+			// Check to see if shadow ray intersects any object.
 			Point3d lightInter = null;
 				
 			for( int j=0; j<w.objectList.size(); j++) {
@@ -178,24 +217,24 @@ public class Camera {
 				}
 			}
 				
-			//If Point is not in shadow, continue finding shading
+			// If Point is not in shadow, continue finding shading
 			if(lightInter == null){
-				//calculating V and S
+				// Calculating V and S
 				Vector3d V = new Vector3d((this.position.x - iPoint.x), (this.position.y - iPoint.y),
 								(this.position.z - iPoint.z));
 				Vector3d S = new Vector3d(w.lightList.get(lightIndex).position.x-(iPoint.x), 
 								w.lightList.get(lightIndex).position.y-(iPoint.y), 
 								w.lightList.get(lightIndex).position.z-(iPoint.z));
 					
-				//Normalizing vectors
+				// Normalizing vectors
 				V.normalize();
 				S.normalize();
 					
-				//calculating S dot product N
+				// Calculating S dot product N
 				double sdotn = S.dot(N);
 					
 				if( sdotn > 0 ) {
-					//Diffuse color
+					// Diffuse color
 					Color diffuseColor = new Color( (kd * sdotn) * ((w.lightList.get(lightIndex).red * objectColor.r )/255), 
 									(kd * sdotn) * ((w.lightList.get(lightIndex).green * objectColor.g)/255), 
 									(kd * sdotn) * ((w.lightList.get(lightIndex).blue * objectColor.b)/255));
@@ -221,9 +260,9 @@ public class Camera {
 				}
 			}
 				
-			//Determine Reflection and Transmission (Recursively) - Checkpoint 5 & 6
+			// Determine Reflection and Transmission (Recursively)
 			if( depth < MAX_DEPTH){
-				//Reflection
+				// Reflection
 				if(kr > 0){
 					Vector3d D = new Vector3d(r.origin.x-iPoint.x, 
 									r.origin.y-iPoint.y, r.origin.z-iPoint.z);
@@ -231,20 +270,15 @@ public class Camera {
 					double ddotn = D.dot(N);
 					if(ddotn >= 0){
 						Vector3d newN = new Vector3d(N.x * (2*ddotn), N.y * (2*ddotn), N.z * (2*ddotn));
-						//newN.normalize();
 						Vector3d R = new Vector3d( (newN.x - D.x), (newN.y - D.y), (newN.z - D.z));
-						//R.normalize();
-						//System.out.println("Angle i: " + Math.acos(D.dot(N)));
-						//System.out.println("Angle r: " + Math.acos(R.dot(N)));
 						Ray reflectiveRay = new Ray(iPoint, R);
 						Color reflect = illuminate(reflectiveRay, depth+1);
 						light.r += kr*reflect.r;
 						light.g += kr*reflect.g;
 						light.b += kr*reflect.b;
-						
 					}	
 				}
-				//Transmission
+				// Transmission
 				if(kt > 0.0) {
 					Vector3d D = new Vector3d(iPoint.x - r.origin.x, iPoint.y - r.origin.y, iPoint.z - r.origin.z);
 					D.normalize();
@@ -271,13 +305,12 @@ public class Camera {
 					}
 					
 					else {
-						//Calculate Reflection Ray Instead
+						// Calculate Reflection Ray Instead
 						D = new Vector3d(r.origin.x-iPoint.x, r.origin.y-iPoint.y, r.origin.z-iPoint.z);
 						D.normalize();
 						double ddotn = D.dot(N);
 						if(ddotn >= 0){
 							Vector3d newN = new Vector3d(N.x * (2*ddotn), N.y * (2*ddotn), N.z * (2*ddotn));
-//							Vector3d R = new Vector3d( (newN.x - D.x), (newN.y - D.y), (newN.z - D.z));
 							Ray reflectiveRay = new Ray(iPoint, new Vector3d( (newN.x - D.x), (newN.y - D.y), 
 												(newN.z - D.z)));
 							Color reflect = illuminate(reflectiveRay, depth+1);
@@ -301,7 +334,6 @@ public class Camera {
 				lightF.r = light.r;
 				lightF.g = light.g;
 				lightF.b = light.b;
-			}
 			}
 		}		
 		return lightF;
