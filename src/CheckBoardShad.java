@@ -2,6 +2,7 @@ import javax.vecmath.Point3d;
 
 /**
  * CheckBoardShad class is a type of shader that can be applied to graphic objects.
+ * It gives the appearance of a bi-color checkerboard on the object.
  * This class is only accurately used on horizontal triangles at the moment.
  *
  * @author  Steve Glazer
