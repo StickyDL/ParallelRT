@@ -18,7 +18,6 @@ public class CameraSmp {
 	BufferedImage image;
 
 	private double[] pixelArray;
-	private double[][] pixelArray2;
 
 	World w;
 	Point3d position;
@@ -36,8 +35,6 @@ public class CameraSmp {
 
 		image = new BufferedImage(xRes, yRes, BufferedImage.TYPE_INT_RGB);
 		pixelArray = new double[xRes*yRes*3];
-		pixelArray2 = new double[this.yRes][];
-
 	}
 
 	public void render(World w, File outputFile, JProgressBar progress ) throws Exception {
@@ -57,7 +54,6 @@ public class CameraSmp {
 					long start;
 					Ray rtRay;
 					Color pixelColor = new Color(0,0,0);
-					double[] pixels;
 					
 					// Extra padding
 					long p0, p1, p2, p3, p4, p5, p6, p7;
@@ -78,7 +74,6 @@ public class CameraSmp {
 						// low + 1 is wrong, should be +0. Helps see the sections on the image
 						for( row = low + 0; row <= high; row++ ){
 							x = xMin;
-                            pixels = new double[xRes * 3];
 							for( col = 0; col < xRes; col++ ) {
                                 renders++;
 
@@ -89,12 +84,7 @@ public class CameraSmp {
 								
                                 pixelArray[pixelNum] = pixelColor.r;
                                 pixelArray[pixelNum+1] = pixelColor.g;
-                                pixelArray[pixelNum+2] = pixelColor.b;
-								
-                                // pixels[col] = pixelColor.r;
-                                // pixels[col+1] = pixelColor.g;
-                                // pixels[col+2] = pixelColor.b;
-								
+                                pixelArray[pixelNum+2] = pixelColor.b;								
                                     
                                 if(pixelArray[pixelNum] > 255)
                                     pixelArray[pixelNum] = 255;
@@ -106,8 +96,6 @@ public class CameraSmp {
 								
 								x += deltaX;
 							}
-
-                            // pixelArray2[row] = pixels;
 							y -= deltaY;
 						}
                         System.out.println( low + " - " + high + " Done.\t" + ( System.currentTimeMillis() - start) + "ms\twith " + renders + " renders");
