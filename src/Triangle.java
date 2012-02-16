@@ -67,15 +67,57 @@ public class Triangle extends GraphicObject {
     }
 
 
+	public boolean intersect(Ray r, Point3d iPoint) 
+	{
+	    double ntd=0.0, t=0.0, total=0.0, absPiTotal=0.0;
+	    Vector3d rOriginVec = new Vector3d();
+	    Vector3d p1 = new Vector3d();
+	    Vector3d l1 = new Vector3d();
+	    Vector3d l2 = new Vector3d();
+	    Vector3d l3 = new Vector3d();
+	    Point3d poi = new Point3d();
+	    
+	    // Extra Padding
+        long z0, z1, z2, z3, z4, z5, z6, z7;
+        long z8, z9, za, zb, zc, zd, ze, zf;
+	    
+	    ntd = normal.dot(r.direction);
+        if ( ntd > 0 ) {
+            return false;
+        } else {
+            rOriginVec.set(r.origin.x, r.origin.y, r.origin.z);
+            p1.set(vertices.get(0).x, vertices.get(0).y, vertices.get(0).z);
+            t = -(normal.dot(rOriginVec) - normal.dot(p1)) / ntd;
+            poi.set(r.origin.x+t*r.direction.x, r.origin.y+t*r.direction.y, r.origin.z+t*r.direction.z);
+            l1.set(vertices.get(0).x-poi.x, vertices.get(0).y-poi.y, vertices.get(0).z-poi.z);
+            l1.normalize();
+            l2.set(vertices.get(1).x-poi.x, vertices.get(1).y-poi.y, vertices.get(1).z-poi.z);
+            l2.normalize();
+            l3.set(vertices.get(2).x-poi.x, vertices.get(2).y-poi.y, vertices.get(2).z-poi.z);
+            l3.normalize();
+            total = Math.acos(l1.dot(l2)) + Math.acos(l2.dot(l3)) + Math.acos(l3.dot(l1));
+            absPiTotal = 2*Math.PI - total;
+            if (absPiTotal < 0) {
+                absPiTotal *= -1;
+            }
+            if(absPiTotal < .0001){ //point is inside plane
+                iPoint.set(poi.x, poi.y, poi.z);
+                return true;
+            } else { //point is outside plane
+                return false;
+            }
+        }
+	}
+	
 	public Point3d intersect(Ray r) 
 	{
 	    double ntd=0.0, t=0.0, total=0.0, absPiTotal=0.0;
 	    Vector3d rOriginVec = new Vector3d();
 	    Vector3d p1 = new Vector3d();
-	    Point3d poi = new Point3d();
 	    Vector3d l1 = new Vector3d();
 	    Vector3d l2 = new Vector3d();
 	    Vector3d l3 = new Vector3d();
+	    Point3d poi = new Point3d();
 	    
 	    // Extra Padding
         long z0, z1, z2, z3, z4, z5, z6, z7;
@@ -108,8 +150,17 @@ public class Triangle extends GraphicObject {
         }
 	}
 	
-	public Vector3d getNormal(Point3d point) {
+	
+	public Vector3d getNormal(Point3d point) 
+	{
 	    return this.normal;
+	}
+	
+	public void getNormal(Point3d point, Vector3d norm) 
+	{
+	    norm.x = this.normal.x;
+	    norm.y = this.normal.y;
+	    norm.z = this.normal.z;
 	}
 	
 	public Color getColor(Point3d point) {
