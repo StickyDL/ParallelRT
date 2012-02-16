@@ -39,6 +39,8 @@ public class WorldMarbleGrid extends WorldGenerator{
 	 */
 	public WorldMarbleGrid( int marbles, int style, int frameCount ){
 		frames = frameCount;
+		System.out.println( "WorldMarbleGrid( " + marbles + ", " + style + ", " + frameCount + " )" );
+		System.out.println( "\tGenerating Worlds" );
 		LinkedList<World> worldList = new LinkedList<World>(); 
 		
 		double centerx = 0;
@@ -131,9 +133,9 @@ public class WorldMarbleGrid extends WorldGenerator{
 			triAVertices.add( PLANEVERTRF );
 			triAVertices.add( PLANEVERTRR );
 
-			triBVertices.add( PLANEVERTLR );
-			triBVertices.add( PLANEVERTRR );
 			triBVertices.add( PLANEVERTLF );
+			triBVertices.add( PLANEVERTRR );
+			triBVertices.add( PLANEVERTLR );
 
 			// Set up light
 			Point3d LIGHTCENTER = new Point3d( 0.3, 2.75, 1.0 );
@@ -191,6 +193,7 @@ public class WorldMarbleGrid extends WorldGenerator{
 		}
 		
 		worlds = worldList.toArray( new World[0] );
+		System.out.println( "\tGeneration Finished" );
 	}
 
 	public World[] getWorlds(){

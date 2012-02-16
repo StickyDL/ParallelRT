@@ -26,25 +26,99 @@ public class RayTracerSmp{
 	final static int THREADS = ParallelTeam.getDefaultThreadCount();
 	
 	private static boolean GUI = false;
+	private static boolean PLAYER = true;
+	
 	private WorldGenerator genWorlds;
 
 	public static void main( String[] args ) throws Exception{
 		int seed = new Random().nextInt();
-		try{
-			seed = Integer.parseInt(args[0]);
-		}catch( Exception e ){}
+		WorldGenerator wg = null;
+		int frames = 5*24;
+		int marbles = 5;
+		String world = "marbles";
 		
-		System.out.println( "Seed: " + seed );
+		if( args.length == 1 && ( args[0].contains( "help" ) || args[0].equals( "-h" ) ) ){
+			usage();
+		}
 		
-//        RayTracerSmp rt = new RayTracerSmp( new WorldMarbles( 5, 10, true, seed ) );
-		RayTracerSmp rt = new RayTracerSmp( new WorldAntimatter( 24*20, 20, seed ) );
-        // RayTracerSmp rt = new RayTracerSmp( new WorldMarbleGrid( 10, WorldMarbleGrid.DIAGONAL ) );
+		for( int i = 0; i < args.length; i++ ){
+			args[i] = args[i].toLowerCase();
+			
+			try{
+				if( args[i].startsWith( "seed" ) ){
+					seed = Integer.parseInt( args[i].substring( 5 ) );
+					
+				}else if( args[i].startsWith( "frames" ) ){
+					frames = Integer.parseInt( args[i].substring( 7 ) );
+					
+				}else if( args[i].startsWith( "seconds" ) ){
+					frames = Integer.parseInt( args[i].substring( 8 ) ) * 24;
+					
+				}else if( args[i].startsWith( "world" ) ){
+					world = args[i].substring( 6 );
+					if( world.startsWith( "world" ) ){
+						world = world.substring( 5 );
+					}
+					
+				}else if( args[i].startsWith( "marbles" ) ){
+					marbles = Integer.parseInt( args[i].substring( 8 ) );
+					
+				}else if( args[i].startsWith( "gui" ) ){
+					try{
+						GUI = Integer.parseInt( args[i].substring( 4 ) ) != 0;
+					}catch( Exception e ){
+						try{
+							GUI = Boolean.parseBoolean( args[i].substring( 4 ) );
+						}catch( Exception ex ){
+							System.err.println( "Argument: \"" + args[i].substring( 4 ) + "\" for 'gui' unknown. Ignored." );
+						}
+					}
+					
+				}else if( args[i].startsWith( "player" ) ){
+					try{
+						PLAYER = Integer.parseInt( args[i].substring( 7 ) ) != 0;
+					}catch( Exception e ){
+						try{
+							PLAYER = Boolean.parseBoolean( args[i].substring( 7 ) );
+						}catch( Exception ex ){
+							System.err.println( "Value: \"" + args[i].substring( 7 ) + "\" for 'player' unknown. Ignored." );
+						}
+					}
+				}else{
+					System.err.println( "Argument: \"" + args[i] + "\" unknown. Ignored." );
+				}
+			}catch( Exception e ){
+				System.err.println( "Argument: " + args[i] + " not understood. Ignored." );
+			}
+		}
+		
+		if( world.equals( "marbles" ) ){
+			wg = new WorldMarbles( frames, marbles, true, seed );
+		}else if( world.equals( "antimatter" ) ){
+			wg = new WorldAntimatter( frames, marbles, seed );
+		}else if( world.equals( "collide" ) ){
+			wg = new WorldCollide( frames, marbles, true, seed );
+		}else if( world.equals( "marblegrid" ) ){
+			wg = new WorldMarbleGrid( marbles, WorldMarbleGrid.DIAGONAL, frames );
+		}else{
+			usage();
+		}
+		
+		RayTracerSmp rt = new RayTracerSmp( wg );
+		
         rt.cleanup();
         long startTime = System.currentTimeMillis();
 		rt.render();
 		System.out.println("Total:  " + (System.currentTimeMillis() - startTime) + "msec");
 
-		PlayMovie.main( new String[]{} );
+		if( PLAYER ){
+			PlayMovie.main( new String[]{} );
+		}
+	}
+	
+	private static void usage(){
+		System.err.println( "Usage: java RayTracerSeq [seed=<int>] [world=<generator>] [frames=<int>] [seconds=<int>] [marbes=<int>] [player=<boolean>] [gui=<boolean>]" );
+		System.exit( 1 );
 	}
 
 	/**
@@ -79,7 +153,7 @@ public class RayTracerSmp{
 		// Setup worlds to render
 		final World[] worlds = genWorlds.getWorlds();
 
-		final JProgressBar main = null;
+		final JProgressBar main = new JProgressBar( 0, worlds.length );
 		final JProgressBar[] bars = new JProgressBar[THREADS];
 		
 		if( GUI ){

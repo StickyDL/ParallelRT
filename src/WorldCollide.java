@@ -23,51 +23,51 @@ public class WorldCollide extends WorldGenerator{
 	/**
 	 * Generates worlds of marbles to render
 	 * 
-	 * @param seconds
-	 *            Number of seconds in animation
+	 * @param frames
+	 *            Number of frames in animation
 	 */
-	public WorldCollide( int seconds ){
-		this( seconds, -1, false, -1 );
+	public WorldCollide( int frames ){
+		this( frames, -1, false, -1 );
 	}
 
 
 	/**
 	 * Generates worlds of marbles to render
 	 * 
-	 * @param seconds
-	 *            Number of seconds in animation
+	 * @param frames
+	 *            Number of frames in animation
 	 * @param colorful
 	 *            True to use colorful marbles, false to use transparent ones
 	 */
-	public WorldCollide( int seconds, boolean colorful ){
-		this( seconds, -1, colorful, -1 );
+	public WorldCollide( int frames, boolean colorful ){
+		this( frames, -1, colorful, -1 );
 	}
 
 	/**
 	 * Generates worlds of marbles to render
 	 * 
-	 * @param seconds
-	 *            Number of seconds in animation
+	 * @param frames
+	 *            Number of frames in animation
 	 * @param marbles
 	 *            Number of marbles to generate
 	 */
-	public WorldCollide( int seconds, int marbles ){
-		this( seconds, marbles, false, -1 );
+	public WorldCollide( int frames, int marbles ){
+		this( frames, marbles, false, -1 );
 	}
 	
 	
 	/**
 	 * Generates worlds of marbles to render
 	 * 
-	 * @param seconds
-	 *            Number of seconds in animation
+	 * @param frames
+	 *            Number of frames in animation
 	 * @param marbles
 	 *            Number of marbles to generate
 	 * @param colorful
 	 *            True to use colorful marbles, false to use transparent ones
 	 */
-	public WorldCollide( int seconds, int marbles, boolean colorful ){
-		this( seconds, marbles, colorful, -1 );
+	public WorldCollide( int frames, int marbles, boolean colorful ){
+		this( frames, marbles, colorful, -1 );
 	}
 
 
@@ -75,18 +75,17 @@ public class WorldCollide extends WorldGenerator{
 	/**
 	 * Generates worlds of marbles to render
 	 * 
-	 * @param seconds  Number of seconds in animation
+	 * @param frames  Number of seconds in animation
 	 * @param marbles  Number of marbles to generate
 	 * @param colorful True to use colorful marbles, false to use transparent ones
 	 * @param seed     Random number generator seed
 	 */
-	public WorldCollide( int seconds, int marbles, boolean colorful, int seed ){
-		worlds = new World[24 * seconds];
-		if( seed < 0 ){
-			seed = new Random().nextInt();
-		}
+	public WorldCollide( int frames, int marbles, boolean colorful, int seed ){
+		worlds = new World[frames];
+		System.out.println( "WorldCollide( " + frames + ", " + marbles + ", " + colorful + ", " + seed + " )" );
+		System.out.println( "\tGenerating Worlds" );
+
 		Random r = new Random( seed );
-		System.out.println( "World Generator seed: " + seed );
 
 		// Marble x,y,z positions
 		double posx[] = new double[]{ -0.4, 0.25, 0.0 };
@@ -360,6 +359,8 @@ public class WorldCollide extends WorldGenerator{
 				
 			}
 		}
+		
+		System.out.println( "\tGeneration Finished" );
 	}
 
 	public World[] getWorlds(){
