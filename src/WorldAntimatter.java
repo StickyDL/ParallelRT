@@ -8,7 +8,7 @@ import javax.vecmath.Point3d;
 public class WorldAntimatter extends WorldGenerator{
 	private World[] worlds;
     
-	
+	// Bound area for marbles
 	final static double back = -10;
 	final static double front = 0;
 	final static double left = -2.25;
@@ -16,23 +16,41 @@ public class WorldAntimatter extends WorldGenerator{
 	final static double bottom = 0.0;
 	final static double top = 3.0;
 	
-	public WorldAntimatter( int seconds, int particles ){
-		this( seconds, particles, new Random().nextInt() );
+	/**
+	 * Generates world of marbles simulating anti-protons in a magnetic field
+	 * 
+	 * @param frames    Number of frames to render
+	 * @param particles Number of anti-protons to simulate
+	 */
+	public WorldAntimatter( int frames, int particles ){
+		this( frames, particles, new Random().nextInt() );
 	}
 	
+	/**
+	 * Generates world of marbles simulating anti-protons in a magnetic field
+	 * 
+	 * @param frames    Number of frames to render
+	 * @param particles Number of anti-protons to simulate
+	 * @param seed      Seed value for a random number generator
+	 */
 	public WorldAntimatter( int frames, int particles, int seed ){
 		LinkedList<World> worldList = new LinkedList<World>();
 		System.out.println( "WorldAntimatter( " + frames + ", " + particles + ", " + seed + " )" );
 		System.out.println( "\tGenerating Worlds" );
 		
+		// Point to center anti-protons around
 		double centerx = 0;
 		double centerz = -4;
 		double centery = 0.25;
+		
+		// Field size to scale result into
 		double widthx = 6;
 		double widthz = 7;
 		
+		// Anti-proton radius
 		double radius = 0.1;
 		
+		// Sphere proteries
 		Color[] colors = new Color[particles*particles];
 		double ka = 0.2;
 		double kd = 0.2;
@@ -41,6 +59,7 @@ public class WorldAntimatter extends WorldGenerator{
 		double kt = 0.5;
 		int ke = 50;
 		
+		// Alternate anti-proton colors to make it interesting looking
 		for( int i = 0; i < particles; i++ ){
 			if( (i&1) == 0 ){
 				colors[i] = new Color(255,20,147); // Pink
@@ -66,9 +85,11 @@ public class WorldAntimatter extends WorldGenerator{
 		triBVertices.add( PLANEVERTRR );
 		triBVertices.add( PLANEVERTLR );
 
+		// Use PJ AntiprotonSeq to simulate anti-protons and get coordinate locations
 		AntiprotonSeq.simulate( seed, frames, particles );
 		double[][] points = AntiprotonSeq.positions;
 		
+		// Set up each world (each frame)
 		for( int i = 0; i < frames; i++ ){
 				World world = new World();
 				worldList.add( world );
@@ -89,9 +110,12 @@ public class WorldAntimatter extends WorldGenerator{
 				for( int k = 0; k < centers.length; k++ ){
 					world.add( new Sphere( centers[k], radius, colors[k], ka, kd, ks, ke, kr, kt ) );
 				}
+				
+				// Add floor to world
                 world.add( new Triangle( triAVertices, new Color( 255, 255, 255 ), 0.2, 0.4, 0.6, 20, 0.6, 0.0, 1 ) );
                 world.add( new Triangle( triBVertices, new Color( 255, 255, 255 ), 0.2, 0.4, 0.6, 20, 0.6, 0.0, 1 ) );
 		
+                // Add light source
 				world.add( new PointLight( LIGHTCENTER, new Color( 255.0, 255.0, 255.0 ) ) );
 			}
 
@@ -99,6 +123,9 @@ public class WorldAntimatter extends WorldGenerator{
 		System.out.println( "\tGeneration Finished" );
 	}
 
+	/**
+	 * Gets the worlds produced by this world generator
+	 */
 	public World[] getWorlds() {
 		return worlds;
 	}
