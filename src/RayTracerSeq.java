@@ -109,8 +109,11 @@ public class RayTracerSeq {
 		}
 	}
 	
+	/**
+	 * Prints usage information for the main method and exits
+	 */
 	private static void usage(){
-		System.err.println( "Usage: java RayTracerSeq [seed=<int>] [world=<generator>] [frames=<int>] [seconds=<int>] [marbes=<int>] [player=<boolean>] [gui=<boolean>]" );
+		System.err.println( "Usage: java RayTracerSeq [seed=<int>] [world=<generator>] [frames=<int>] [seconds=<int>] [marbles=<int>] [player=<boolean>] [gui=<boolean>]" );
 		System.exit( 1 );
 	}
 	
