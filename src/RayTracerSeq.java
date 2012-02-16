@@ -5,6 +5,8 @@ import javax.swing.JProgressBar;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
+import edu.rit.pj.Comm;
+
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.io.File;
@@ -21,6 +23,8 @@ public class RayTracerSeq {
 	private WorldGenerator genWorlds;
 	
 	public static void main(String[] args) throws Exception {
+		Comm.init(args);
+		
 		int seed = new Random().nextInt();
 		WorldGenerator wg = null;
 		int frames = 5*24;
