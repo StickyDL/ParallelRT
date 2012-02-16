@@ -13,6 +13,13 @@ import java.awt.GridLayout;
 import java.io.File;
 import java.util.Random;
 
+/**
+ * Runs a ray tracer as an Smp
+ * 
+ * Parallelizes the pixels.  So each thread computes a subset of pixels from
+ * a single frame
+ *
+ */
 public class RayTracerSmp2{
 	final static Point3d CAMERACENTER = new Point3d( 0.0, 1.0, 2.0 );
 	final static Point3d CAMERALOOKAT = new Point3d( 0.0, 0.0, -1.0 ); // Direction
@@ -20,8 +27,8 @@ public class RayTracerSmp2{
 	
 	final static int THREADS = ParallelTeam.getDefaultThreadCount();
 	
-	private static boolean GUI = false;
-	private static boolean PLAYER = true;
+	private static boolean GUI = false;   // Show rendering gui
+	private static boolean PLAYER = true; // Show player after rendering
 	
 	private WorldGenerator genWorlds;
 
@@ -34,10 +41,12 @@ public class RayTracerSmp2{
 		int marbles = 5;
 		String world = "marbles";
 		
+		// Display help
 		if( args.length == 1 && ( args[0].contains( "help" ) || args[0].equals( "-h" ) ) ){
 			usage();
 		}
 		
+		// Check commandline arguments
 		for( int i = 0; i < args.length; i++ ){
 			args[i] = args[i].toLowerCase();
 			
@@ -89,6 +98,7 @@ public class RayTracerSmp2{
 			}
 		}
 		
+		// Set up world generator
 		if( world.equals( "marbles" ) ){
 			wg = new WorldMarbles( frames, marbles, true, seed );
 		}else if( world.equals( "antimatter" ) ){
@@ -101,8 +111,10 @@ public class RayTracerSmp2{
 			usage();
 		}
 		
+		// Create ray tracer
 		RayTracerSmp2 rt = new RayTracerSmp2( wg );
 		
+		// Cleanup existing render frames and run new render
         rt.cleanup();
         long startTime = System.currentTimeMillis();
 		rt.render();
@@ -110,6 +122,7 @@ public class RayTracerSmp2{
 		System.out.println("Time: " + runTime + "msec");
 		System.out.println( "Time / frame: " + ( runTime / frames ) );
 
+		// Show movie player
 		if( PLAYER ){
 			PlayMovie.main( new String[]{} );
 		}
@@ -132,6 +145,9 @@ public class RayTracerSmp2{
 		this.genWorlds = genWorlds;
 	}
 	
+	/**
+	 * Removes any existing rendered frames from current directory
+	 */
 	public void cleanup(){
 		// Erase previous render
 		File[] files = new File( "." ).listFiles();
@@ -215,6 +231,7 @@ public class RayTracerSmp2{
 			main.setString( "Done!" );
 		}
 		
+		// Compute some timing metrics
 		int renderTime = 0;
 		int ioTime = 0;
 		int ttlTime = 0;
