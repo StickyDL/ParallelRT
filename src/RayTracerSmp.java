@@ -117,7 +117,7 @@ public class RayTracerSmp{
 	}
 	
 	private static void usage(){
-		System.err.println( "Usage: java RayTracerSeq [seed=<int>] [world=<generator>] [frames=<int>] [seconds=<int>] [marbes=<int>] [player=<boolean>] [gui=<boolean>]" );
+		System.err.println( "Usage: java RayTracerSmp [seed=<int>] [world=<generator>] [frames=<int>] [seconds=<int>] [marbes=<int>] [player=<boolean>] [gui=<boolean>]" );
 		System.exit( 1 );
 	}
 
