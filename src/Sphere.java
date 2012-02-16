@@ -37,10 +37,63 @@ public class Sphere extends GraphicObject {
     	this.kt = kt;   
 	}
 	
-	 public Point3d intersect(Ray r){
+	 public boolean intersect(Ray r, Point3d iPoint){
          double dx=0.0, dy=0.0, dz=0.0, b=0.0, c=0.0, underRoot=0.0, t1=0.0, t2=0.0, t=-1.0;
          double xintersect=0.0, yintersect=0.0, zintersect=0.0;
-         Point3d result = new Point3d();
+         
+         // Extra Padding
+         long p0, p1, p2, p3, p4, p5, p6, p7;
+         long p8, p9, pa, pb, pc, pd, pe, pf;
+
+		 dx = r.direction.x;
+		 dy = r.direction.y;
+		 dz = r.direction.z;
+
+		 b = 2 * ((dx*(r.origin.x - center.x)) + (dy*(r.origin.y - center.y)) + (dz*(r.origin.z - center.z)));
+		 c = ((r.origin.x - center.x)*(r.origin.x - center.x)) + ((r.origin.y - center.y)*(r.origin.y - center.y)) + ((r.origin.z - center.z)*(r.origin.z - center.z)) - (radius * radius);
+
+		 underRoot = (b * b) - (4 * c);
+
+		 t = -1;
+
+		 if( underRoot < 0 ) {
+			 //no intersection
+			 return false;
+		 }
+		 else if( underRoot == 0) {
+			 //one intersection
+			 t = ((-1 * b) + Math.sqrt(underRoot)) / 2;
+		 }
+		 else {
+			//two intersections
+			//find least positive
+			t1 = ((-1 * b) + Math.sqrt(underRoot)) / 2;
+			t2 = ((-1 * b) - Math.sqrt(underRoot)) / 2;
+
+			if( t1 > 0 && t2 > 0) {
+				if (t1 < t2)
+					t = t1;
+				else
+					t = t2;
+			}
+			else if( t < 0 ) {
+				return false;
+			}
+		 }
+
+		xintersect = r.origin.x + (dx * t);
+		yintersect = r.origin.y + (dy * t);
+		zintersect = r.origin.z + (dz * t) - 0.0000001;
+		
+		iPoint.set(xintersect, yintersect, zintersect);
+	
+		return true; 
+	}
+	
+	public Point3d intersect(Ray r){
+         double dx=0.0, dy=0.0, dz=0.0, b=0.0, c=0.0, underRoot=0.0, t1=0.0, t2=0.0, t=-1.0;
+         double xintersect=0.0, yintersect=0.0, zintersect=0.0;
+         Point3d iPoint = new Point3d();
          
          // Extra Padding
          long p0, p1, p2, p3, p4, p5, p6, p7;
@@ -86,9 +139,9 @@ public class Sphere extends GraphicObject {
 		yintersect = r.origin.y + (dy * t);
 		zintersect = r.origin.z + (dz * t) - 0.0000001;
 		
-		result.set(xintersect, yintersect, zintersect);
+		iPoint.set(xintersect, yintersect, zintersect);
 	
-		return result; 
+		return iPoint; 
 	}
 	
 	public Vector3d getNormal(Point3d point) {
@@ -108,6 +161,11 @@ public class Sphere extends GraphicObject {
 			
 		//Surface normal vector 
 		return result;
+	}
+	
+	public void getNormal(Point3d point, Vector3d norm) {
+		norm.set((point.x - center.x) / radius, (point.y - center.y) / radius, (point.z - center.z) / radius);
+		norm.normalize();
 	}
 	 
 	public Color getColor(Point3d point) {
