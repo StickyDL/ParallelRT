@@ -4,6 +4,10 @@ import java.util.Random;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
+/**
+ * Generates worlds of many bouncing super-balls
+ *
+ */
 public class WorldMarbles extends WorldGenerator{
 
 	World[] worlds;

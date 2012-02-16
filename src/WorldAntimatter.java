@@ -4,7 +4,10 @@ import java.util.Random;
 
 import javax.vecmath.Point3d;
 
-
+/**
+ * Generates worlds which simulate anti-protons in a magnetic field
+ *
+ */
 public class WorldAntimatter extends WorldGenerator{
 	private World[] worlds;
     
