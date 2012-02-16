@@ -8,8 +8,10 @@ public class WorldMarbles extends WorldGenerator{
 
 	World[] worlds;
 
+	// Time step size
 	final static double step = 1.0 / 24.0;
 
+	// Bound area for marbles
 	final static double back = -10;
 	final static double front = 0;
 	final static double left = -2.25;
@@ -17,7 +19,8 @@ public class WorldMarbles extends WorldGenerator{
 	final static double bottom = 0.0;
 	final static double top = 3.0;
 
-	final static double diminish = 0.9; // How much speed drops when a wall is hit
+	// How much speed drops when a wall is hit
+	final static double diminish = 0.9;
 
 
 	/**
@@ -129,6 +132,8 @@ public class WorldMarbles extends WorldGenerator{
 			ke = new int[marbles];
 			kr = new double[marbles];
 			kt = new double[marbles];
+			
+			// Generate random values for each marble
 			for( int i = 0; i < marbles; i++ ){
 				radii[i] = (r.nextDouble() / 3 + 0.1);
 				posx[i] = r.nextDouble() * (right - left - 2 * radii[i]) + left + radii[i];
@@ -155,12 +160,11 @@ public class WorldMarbles extends WorldGenerator{
 			}
 		}
 
-		// Set up floor
-		ArrayList<Point3d> triAVertices = new ArrayList<Point3d>();
-		ArrayList<Point3d> triBVertices = new ArrayList<Point3d>();
-		ArrayList<Point3d> triCVertices = new ArrayList<Point3d>();
-		ArrayList<Point3d> triDVertices = new ArrayList<Point3d>();
-		ArrayList<Point3d> rectVertices = new ArrayList<Point3d>();
+		// Set up floor and walls
+		ArrayList<Point3d> triAVertices = new ArrayList<Point3d>(); // Floor
+		ArrayList<Point3d> triBVertices = new ArrayList<Point3d>(); // Floor
+		ArrayList<Point3d> triCVertices = new ArrayList<Point3d>(); // Left wall
+		ArrayList<Point3d> triDVertices = new ArrayList<Point3d>(); // Left wall
 
 		Point3d PLANEVERTLF = new Point3d( left, bottom, front );
 		Point3d PLANEVERTRF = new Point3d( right, bottom, front );
@@ -187,11 +191,6 @@ public class WorldMarbles extends WorldGenerator{
 		triDVertices.add( LEFTPLANEVERTLFT );
 		triDVertices.add( LEFTPLANEVERTRRB );
 		triDVertices.add( LEFTPLANEVERTRRT );
-		
-		rectVertices.add( PLANEVERTRF );
-		rectVertices.add( PLANEVERTLF );
-		rectVertices.add( PLANEVERTLR );
-		rectVertices.add( PLANEVERTRR );
 
 		// Set up light
 		Point3d LIGHTCENTER = new Point3d( 0.3, 2.75, 1.0 );
@@ -213,11 +212,14 @@ public class WorldMarbles extends WorldGenerator{
 			for( int k = 0; k < centers.length; k++ ){
 				world.add( new Sphere( centers[k], radii[k], colors[k], ka[k], kd[k], ks[k], ke[k], kr[k], kt[k] ) );
 			}
+			
+			// Create floor
             world.add( new Triangle( triAVertices, new Color( 255, 255, 255 ), 0.2, 0.4, 0.6, 20, 0.6, 0.0, shaderIndex ) );
             world.add( new Triangle( triBVertices, new Color( 255, 255, 255 ), 0.2, 0.4, 0.6, 20, 0.6, 0.0, shaderIndex ) );
+            
+            // Create left wall
             // world.add( new Triangle( triCVertices, new Color( 255, 255, 255 ), 0.2, 0.4, 0.6, 20, 0.6, 0.0, shaderIndex ) );
             // world.add( new Triangle( triDVertices, new Color( 255, 255, 255 ), 0.2, 0.4, 0.6, 20, 0.6, 0.0, shaderIndex ) );
-            // world.add( new Rectangle(rectVertices, new Color(255, 255, 255), shaderIndex) );
 
 			world.add( new PointLight( LIGHTCENTER, new Color( 255.0, 255.0, 255.0 ) ) );
 
@@ -282,6 +284,9 @@ public class WorldMarbles extends WorldGenerator{
 		System.out.println( "\tGeneration Finished" );
 	}
 
+	/**
+	 * Gets the worlds produced by this world generator
+	 */
 	public World[] getWorlds(){
 		return worlds;
 	}
