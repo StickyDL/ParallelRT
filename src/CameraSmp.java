@@ -37,8 +37,8 @@ public class CameraSmp {
 		pixelArray = new double[xRes*yRes*3];
 	}
 
-	public void render(World w, File outputFile, JProgressBar progress ) throws Exception {
-		
+	public long[] render(World w, File outputFile, JProgressBar progress ) throws Exception {
+		long t1 = System.currentTimeMillis();
 		WritableRaster raster = image.getRaster();
 		this.w = w;
 		final Point3d camPoint = this.position;
@@ -51,7 +51,7 @@ public class CameraSmp {
 					double y, x, xMin=-0.5, xMax=0.5, yMin=0.5, yMax=1.5, z=0.5;
 					double deltaY = (yMax - yMin) / yRes;
                 	double deltaX = (xMax - xMin) / xRes;
-					long start;
+//					long start;
 					Ray rtRay;
 					Color pixelColor = new Color(0,0,0);
 					
@@ -64,7 +64,7 @@ public class CameraSmp {
                     }
 					
 					public void run( int low, int high ) throws Exception{
-						start = System.currentTimeMillis();
+//						start = System.currentTimeMillis();
 						
 						pixelNum = low * xRes * 3;
 						renders = 0;
@@ -98,7 +98,7 @@ public class CameraSmp {
 							}
 							y -= deltaY;
 						}
-                        System.out.println( low + " - " + high + " Done.\t" + ( System.currentTimeMillis() - start) + "ms\twith " + renders + " renders");
+//                        System.out.println( low + " - " + high + " Done.\t" + ( System.currentTimeMillis() - start) + "ms\twith " + renders + " renders");
 					}
 				});
 			}
@@ -106,13 +106,16 @@ public class CameraSmp {
 		
 		raster.setPixels(0, 0, this.xRes, this.yRes, pixelArray);
 		
+		long t2 = System.currentTimeMillis();
 		try{
 			ImageIO.write(image, "png", outputFile );
 		}catch( Exception e ){
 			System.err.println( e.getMessage() );
 			e.printStackTrace();
 		}
+		long t3 = System.currentTimeMillis();
 
+		return new long[]{t2-t1,t3-t2};
 	}
 	
 	private static double dist( Point3d a, Point3d b ){

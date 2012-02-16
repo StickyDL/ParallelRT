@@ -202,16 +202,35 @@ public class RayTracerSmp2{
 			main = null;
 			bars = null;
 		}
+
+		final long[][] times = new long[worlds.length][];
 		
 		// Render all worlds and save to file
 		for( int i = 0; i < worlds.length; i++ ){
 			CameraSmp camera = new CameraSmp( CAMERACENTER, CAMERALOOKAT, CAMERAUP );
-			camera.render( worlds[i], new File( "render_" + String.format( "%1$04d" , i) + ".png" ), null );
+			times[i] = camera.render( worlds[i], new File( "render_" + String.format( "%1$04d" , i) + ".png" ), null );
 		}
 
 		if( GUI ){
 			main.setString( "Done!" );
 		}
+		
+		int renderTime = 0;
+		int ioTime = 0;
+		int ttlTime = 0;
+		for( int i = 0; i < times.length; i++ ){
+			renderTime += times[i][0];
+			ioTime += times[i][1];
+			ttlTime += times[i][0] + times[i][1];
+		}
+		
+		renderTime /= times.length;
+		ioTime /= times.length;
+		ttlTime /= times.length;
+		
+		System.out.println( "Average Frame Render Time: " + renderTime );
+		System.out.println( "Average Frame I/O Time   : " + ioTime );
+		System.out.println( "Average Frame Total Time : " + ttlTime );
 	}
 
 }
