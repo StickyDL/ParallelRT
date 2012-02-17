@@ -2,34 +2,57 @@ import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 import java.util.ArrayList;
 
+/**
+ * Represents a Triangle object in the 3d scene
+ *
+ * @author  Steve Glazer
+ * @author  Sara Jackson
+ * @author  Sam Milton
+ * @version 16-Feb-2012
+ */
 public class Triangle extends GraphicObject {
 
 	ArrayList<Point3d> vertices;
 	Shader shader = null;
 
+    /**
+     * Constructor
+     *
+     * @param vertices      vertices of the triangle
+     * @param ambc          ambient color of the triangle
+     */
 	public Triangle(ArrayList<Point3d> vertices, Color ambc)
 	{
         this(vertices, ambc, 0.2, 0.4, 0.6, 20, 0.0, 0.0, 0);
     }
     
+    /**
+     * Constructor
+     *
+     * @param vertices      vertices of the triangle
+     * @param ambc          ambient color of the triangle
+     * @param shaderIndex   index of the shader to use
+     */
     public Triangle(ArrayList<Point3d> vertices, Color ambc, int shaderIndex)
     {
         this(vertices, ambc, 0.2, 0.4, 0.6, 20, 0.0, 0.0, shaderIndex);
     }
 
-    /*
-	    Creates a Sphere object with the given vertices, surface normal, ambient color,
-	    ambient light, diffuse light, specular light, the exponent, reflectivity,
-	    transparency, and a shaderIndex.
-	    
-	    ka - Ambient Lighting (0-1). Amount of background light
-	    kd - Diffuse Lighting (0-1). Lambertian Reflection
-	    ks - Specular Lighting (0-1). Mirror-like Reflection
-	    ke - Exponent (20-100. Needs to be EVEN) - Controls size of Specular Highlight
-	    kr - Reflectivity (0-1). 0=Non-Reflective 1=Reflective
-	    kt - Transparency (0-1). 0=Non-Transparent 1=Transparent
-	    shaderIndex - 0=No Shader 1=Checkerboard 2=PolkaDot 3=Ripple
-	*/
+    /**
+	 *  Creates a Triangle object with the given vertices, surface normal, ambient color,
+	 *  ambient light, diffuse light, specular light, the exponent, reflectivity,
+	 *  transparency, and a shaderIndex.
+	 *   
+	 * @param vertices      Vertices of the triangle
+     * @param ambc          Ambient color of the triangle
+	 * @param ka            Ambient Lighting (0-1). Amount of background light
+	 * @param kd            Diffuse Lighting (0-1). Lambertian Reflection
+	 * @param ks            Specular Lighting (0-1). Mirror-like Reflection
+	 * @param ke            Exponent (20-100. Needs to be EVEN) - Controls size of Specular Highlight
+	 * @param kr            Reflectivity (0-1). 0=Non-Reflective 1=Reflective
+	 * @param kt            Transparency (0-1). 0=Non-Transparent 1=Transparent
+	 * @param shaderIndex   0=No Shader 1=Checkerboard 2=PolkaDot 3=Ripple
+	 */
     public Triangle(ArrayList<Point3d> vertices, Color ambc, double ka, double kd, double ks, int ke, double kr, double kt, int shaderIndex)
 	{
 		this.vertices = vertices;
@@ -66,7 +89,18 @@ public class Triangle extends GraphicObject {
         }
     }
 
-
+    /**
+     * Determines whether the given ray intersects the object.
+     * If so, the given iPoint value is set to the intersection
+     * point and true is return.
+     *
+     * Used for pixel parallelized raytracer
+     *
+     * @param r         the ray to determine intersection
+     * @param iPoint    the point to write the intersection point into
+     *
+     * @return true if the ray intersects the object, false otherwise
+     */
 	public boolean intersect(Ray r, Point3d iPoint) 
 	{
 	    double ntd=0.0, t=0.0, total=0.0, absPiTotal=0.0;
@@ -109,6 +143,16 @@ public class Triangle extends GraphicObject {
         }
 	}
 	
+	/**
+     * Determines whether the given ray intersects the object.
+     * If so, the intersection point is returned
+     *
+     * Used for frame parallelized raytracer
+     *
+     * @param r         the ray to determine intersection
+     *
+     * @return the point of intersection, null otherwise
+     */
 	public Point3d intersect(Ray r) 
 	{
 	    double ntd=0.0, t=0.0, total=0.0, absPiTotal=0.0;
@@ -150,12 +194,29 @@ public class Triangle extends GraphicObject {
         }
 	}
 	
-	
+	/**
+     * Returns the surface normal of the object at the given point
+     *
+     * Used for frame parallelized raytracer
+     *
+     * @param point     the point at which to determine the normal
+     *
+     * @return the normal vector from the given point
+     */
 	public Vector3d getNormal(Point3d point) 
 	{
 	    return this.normal;
 	}
 	
+	/**
+     * Determines the surface normal of the object at the given point.
+     * The surface normal is written into the given vector.
+     *
+     * Used for pixel parallelized raytracer
+     *
+     * @param point     the point at which to determine the normal
+     * @param norm      the vector the surface normal is written into
+     */
 	public void getNormal(Point3d point, Vector3d norm) 
 	{
 	    norm.x = this.normal.x;
@@ -163,6 +224,13 @@ public class Triangle extends GraphicObject {
 	    norm.z = this.normal.z;
 	}
 	
+	/**
+     * Returns the color of the object at the given point
+     *
+     * @param point     the point at which to determine the color
+     *
+     * @return the color of the object at the given point
+     */
 	public Color getColor(Point3d point) {
 		Color result = new Color(0,0,0);
 		
