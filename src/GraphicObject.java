@@ -45,7 +45,7 @@ public abstract class GraphicObject {
      *
      * @param r         the ray to determine intersection
      *
-     * @return the point of intersection
+     * @return the point of intersection, null otherwise
      */
 	abstract Point3d intersect(Ray r);
 	
