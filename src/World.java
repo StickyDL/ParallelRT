@@ -1,12 +1,25 @@
 import java.util.*;
 
+/**
+ * The World holds all the objects for a 3d scene
+ *
+ * @author  Steve Glazer
+ * @author  Sara Jackson
+ * @author  Sam Milton
+ * @version 16-Feb-2012
+ */
 public class World {
 	
 	ArrayList<GraphicObject> objectList;
 	ArrayList<PointLight> lightList;
-	//PointLight light;
-	double ambRed, ambGreen, ambBlue; 
-
+	double ambRed, ambGreen, ambBlue;
+	
+    /**
+     * Constructor
+     *
+     * @param objectList    list of the objects in the scene
+     * @param ambient       ambient color of the scene
+     */
 	public World(ArrayList<GraphicObject> objectList, Color ambient){
 		this.objectList = objectList;
 		this.ambRed = ambient.r;
@@ -14,6 +27,9 @@ public class World {
 		this.ambBlue = ambient.b;
 	}
 
+    /**
+     * Constructor
+     */
 	public World() {
 		this.objectList = new ArrayList<GraphicObject>();
 		this.lightList = new ArrayList<PointLight>();
@@ -22,13 +38,21 @@ public class World {
 		this.ambBlue = 255;
 	}
 	
+	/**
+	 * Adds a graphic object to the scene
+	 *
+	 * @param o     object to be added
+	 */
 	public void add(GraphicObject o){
 		objectList.add(o);	
 	}
+	
+	/**
+	* Adds a point light to the scene
+	*
+	* @param e      light to be added
+	*/
 	public void add(PointLight e){
-		lightList.add(e);//light = e;	
-	}
-	public void transform(GraphicObject o){
-		
+		lightList.add(e);
 	}
 }
