@@ -5,9 +5,6 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.Arrays;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
-
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -33,29 +30,9 @@ public class PlayMovie {
 		frame.setBounds(0, 0, 550, 550);
 		frame.setLayout( new BorderLayout() );
 		
-		File dir;
-		if( PICK_FOLDER ){
-			// Display folder selector
-			Display d = new Display();
-			Shell s = new Shell( d );
-			DirectoryDialog dialog = new DirectoryDialog( s, SWT.OPEN );
-			String dirName = dialog.open();
-			s.close();
-			d.dispose();
-			
-			if( dirName == null ){
-				System.exit(1);
-			}
-			
-			dir = new File( dirName );
-			
-			System.out.println( "PlayMovie: Loading movie from " + dirName );
-		}else{
-			// Use current directory
-			dir = new File(".");
-			
-			System.out.println( "PlayMovie: Loading movie from current directory" );
-		}
+		File dir = new File(".");
+		
+		System.out.println( "PlayMovie: Loading movie from current directory" );
 		
 		// Read in all files and construct images
 		File[] files = dir.listFiles();
